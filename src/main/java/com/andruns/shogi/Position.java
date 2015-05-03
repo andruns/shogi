@@ -1,47 +1,88 @@
 package com.andruns.shogi;
 
 import com.andruns.shogi.Constant.Turn;
+import com.andruns.shogi.Constant.PieceName;
+
+import java.util.ArrayList;
 
 /**
  * Created by asanu0829 on 3/15/15.
  */
 public class Position {
-    private Board board;
-//    private PiecesInHand pih;
-    private Player white;
-    private Player black;
     private Turn turn;
+    private Board board;
+    private PiecesInHand pWhite;
+    private PiecesInHand pBlack;
 
     Position(Player wht, Player blk) {
-        this.board = new Board();
-        this.white = wht;
-        this.black = blk;
         this.turn = Turn.WHITE;
+        this.board = new Board();
+        this.pWhite = new PiecesInHand();
+        this.pBlack = new PiecesInHand();
     }
 
-    Position(Board b, Player wht, Player blk, Turn t) {
-        this.board = b;
-        this.white = wht;
-        this.black = blk;
-        this.turn = t;
-    }
+//    // To start from suspended position
+//    Position(Board b, Player wht, Player blk, Turn t) {
+//    }
 
     Boolean moveNextBoard(Move move) {
         int fromSuji = move.getFromSuji();
         int fromDan = move.getFromDan();
         int toSuji = move.getToSuji();
         int toDan = move.getToDan();
-//        if(!canMove(move)) {
-//            return false;
-//        }
-        int from = board.getCell(fromSuji, fromDan);
+        if(!isValidMove(move)) {
+            return false;
+        }
+        int fromPiece = board.getCell(fromSuji, fromDan);
         board.setCell(fromSuji, fromDan, 0);
-        board.setCell(move.getToSuji(), move.getToDan(), from);
+        board.setCell(toSuji, toDan, fromPiece);
+        turn = turn == Turn.WHITE ? Turn.BLACK : Turn.WHITE;
         return true;
     }
 
+    public ArrayList<Move> getMoves() {
+        ArrayList<Move> moves = new ArrayList<Move>();
+        int pieceID;
+        for(int dan = 1; dan <=9; dan++) {
+            for(int suji = 1; suji <= 9; suji++) {
+                if(board.getCell(suji, dan) != 0) {
+                    pieceID = Math.abs(board.getCell(suji, dan));
+                    PieceName piece = PieceName.valueOf(pieceID);
+                    for(int[] movement: piece.getMovement(suji, dan, turn)) {
+                        moves.add(new Move(suji, dan, movement[0], movement[1]));
+                    }
+                }
+            }
+        }
+
+        filterExistMyPiece(moves);
+        filterIsCheck(moves);
+
+        return moves;
+    }
+
+    // TODO
+    boolean isValidMove(Move move) {
+        ArrayList<Move> moves = getMoves();
+        return true;
+    }
+
+    // TODO
+    Move[] getCells(int suji, int dan, int piece) {
+        return new Move[0];
+    }
+
+    // TODO
+    void filterExistMyPiece(ArrayList<Move> moves){}
+
+    // TODO
+    void filterIsCheck(ArrayList<Move> moves){}
+
     @Override
     public String toString() {
-        return board.toString();
+        StringBuilder out = new StringBuilder();
+        out.append("TEBAN: ").append(turn).append("\n");
+        out.append(board.toString());
+        return out.toString();
     }
 }

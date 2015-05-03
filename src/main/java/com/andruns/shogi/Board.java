@@ -1,5 +1,7 @@
 package com.andruns.shogi;
 
+import com.andruns.shogi.Constant.PieceName;
+
 /**
  * Created by asanu0829 on 3/15/15.
  */
@@ -35,7 +37,14 @@ public class Board {
     out.append("==============================================\n");
     for(int dan = 1; dan <=9; dan++) {
       for(int suji = 9; suji >= 1; suji--) {
-        out.append("|").append(board[suji][dan]);
+        out.append("|");
+        if(Math.signum(board[suji][dan]) < 0) {
+          out.append(String.format("%1$4s", "-" + PieceName.valueOf(Math.abs(board[suji][dan]))));
+        } else if (Math.signum(board[suji][dan]) == 0) {
+          out.append("    ");
+        } else {
+          out.append(String.format("%1$4s", PieceName.valueOf(board[suji][dan])));
+        }
       }
       out.append("|\n");
     }

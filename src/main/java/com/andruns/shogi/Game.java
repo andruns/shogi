@@ -49,7 +49,8 @@ class Game {
   public String toString() {
     StringBuilder out = new StringBuilder();
     out.append("Status: ").append(state).append("\n");
-    out.append("Position:\n");
+    out.append("SENTE: ").append(player1.toString()).append("\n");
+    out.append("GOTE:  ").append(player2.toString()).append("\n");
     out.append(position.toString());
     return out.toString();
   }

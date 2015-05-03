@@ -1,5 +1,8 @@
 package com.andruns.shogi;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+
 /**
  * Created by asanu0829 on 3/15/15.
  */
@@ -20,27 +23,72 @@ public class Constant {
         CHUDAN;
     }
 
-    enum Piece {
-        TMP(0),
-        FU(1),
-        KY(2),
-        KE(3),
-        GI(4),
-        KI(5),
-        KA(6),
-        HI(7),
-        TO(8),
-        NKY(9),
-        NKE(10),
-        NG(11),
-        UM(12),
-        RY(13),
-        OU(14);
+    enum PieceName {
+        TMP(0, null, false),
+        FU(1, new int[][]{{0, 1}}, false),
+        KY(2, new int[][]{{0, 3}}, true),
+        KE(3, new int[][]{{-1, 2}, {1, 2}}, false),
+        GI(4, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, -1}, {-1, 1}}, false),
+        KI(5, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
+        KA(6, new int[][]{{-3, 3}, {3, 3}, {-3, -3}, {3, -3}}, true),
+        HI(7, new int[][]{{0, 3}, {-3, 0}, {3, 0}, {0, -3}}, true),
+        TO(8, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
+        NKY(9, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
+        NKE(10, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
+        NG(11, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
+        UM(12, new int[][]{{-3, 3}, {0, 1}, {3, 3}, {-1, 0}, {1, 0}, {-3, -3}, {0, -1}, {3, -3}}, true),
+        RY(13, new int[][]{{-1, 1}, {0, 3}, {1, 1}, {-3, 0}, {3, 0}, {-1, -1}, {0, -3}, {1, -1}}, true),
+        OU(14, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}}, false);
 
         private int id;
+        private int[][] movement;
+        boolean tobi;
 
-        private Piece(int id) {
+        private PieceName(int id, int[][] movement, boolean tobi) {
             this.id = id;
+            this.movement = movement;
+            this.tobi = tobi;
+        }
+
+        public static PieceName valueOf(final int value) {
+            for(PieceName p : EnumSet.allOf(PieceName.class)) {
+                if(p.id == value) {
+                    return p;
+                }
+            }
+            return null;
+        }
+
+        public ArrayList<int[]> getMovement(int fromSuji, int fromDan, Turn turn) {
+            ArrayList<int[]> movement = new ArrayList<int[]>();
+            if(turn == Turn.WHITE) {
+                if (this.tobi == true) {
+                    // TODO
+                } else {
+                    int toSuji, toDan;
+                    for (int[] cell : this.movement) {
+                        toSuji = fromSuji + cell[0];
+                        toDan = fromDan + cell[0];
+                        if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
+                            movement.add(new int[]{toSuji, toDan});
+                        }
+                    }
+                }
+            } else {
+                if (this.tobi == true) {
+                    // TODO
+                } else {
+                    int toSuji, toDan;
+                    for (int[] cell : this.movement) {
+                        toSuji = fromSuji - cell[0];
+                        toDan = fromDan - cell[0];
+                        if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
+                            movement.add(new int[]{toSuji, toDan});
+                        }
+                    }
+                }
+            }
+            return movement;
         }
     }
 }
