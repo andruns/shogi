@@ -37,6 +37,32 @@ public class Move {
     return move[3];
   }
 
+  @Override public boolean equals(Object o){
+    if (o == this)
+      return true;
+    if (!(o instanceof Move))
+      return false;
+    Move move = (Move) o;
+
+    return (move.getFromSuji() == this.getFromSuji()
+        && move.getFromDan() == this.getFromDan()
+        && move.getToSuji() == this.getToSuji()
+        && move.getToDan() == this.getToDan());
+  }
+
+  @Override public int hashCode(){
+    int result = 17 + hashDouble(this.getFromSuji());
+    result = 31 * result + hashDouble(this.getFromDan());
+    result = 31 * result + hashDouble(this.getToSuji());
+    result = 31 * result + hashDouble(this.getToDan());
+    return result;
+  }
+
+  private static int hashDouble(double val){
+    long longBits = Double.doubleToLongBits(val);
+    return (int) (longBits ^ (longBits >>> 32));
+  }
+
   @Override
   public String toString() {
     StringBuilder out = new StringBuilder();

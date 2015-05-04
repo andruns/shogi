@@ -9,35 +9,33 @@ import java.util.EnumSet;
 public class Constant {
     enum Turn {
         WHITE,
-        BLACK;
+        BLACK
     }
 
     enum GameState {
         PREP,
-        RUNNING,
-        SUSOEND,
+        STARTING,
         WIN_BLACK,
         WIN_WHITE,
-        SENNICHITE,
-        JISHOGI,
-        CHUDAN;
+        DROW,
+        SUSPEND
     }
 
     enum PieceName {
         TMP(0, null, false),
         FU(1, new int[][]{{0, 1}}, false),
-        KY(2, new int[][]{{0, 3}}, true),
+        KY(2, new int[][]{{0, 9}}, true),
         KE(3, new int[][]{{-1, 2}, {1, 2}}, false),
-        GI(4, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, -1}, {-1, 1}}, false),
+        GI(4, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, -1}, {1, -1}}, false),
         KI(5, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
-        KA(6, new int[][]{{-3, 3}, {3, 3}, {-3, -3}, {3, -3}}, true),
-        HI(7, new int[][]{{0, 3}, {-3, 0}, {3, 0}, {0, -3}}, true),
+        KA(6, new int[][]{{-9, 9}, {9, 9}, {-9, -9}, {9, -9}}, true),
+        HI(7, new int[][]{{0, 9}, {-9, 0}, {9, 0}, {0, -9}}, true),
         TO(8, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
         NKY(9, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
         NKE(10, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
         NG(11, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}}, false),
-        UM(12, new int[][]{{-3, 3}, {0, 1}, {3, 3}, {-1, 0}, {1, 0}, {-3, -3}, {0, -1}, {3, -3}}, true),
-        RY(13, new int[][]{{-1, 1}, {0, 3}, {1, 1}, {-3, 0}, {3, 0}, {-1, -1}, {0, -3}, {1, -1}}, true),
+        UM(12, new int[][]{{-9, 9}, {0, 1}, {9, 9}, {-1, 0}, {1, 0}, {-9, -9}, {0, -1}, {9, -9}}, true),
+        RY(13, new int[][]{{-1, 1}, {0, 9}, {1, 1}, {-9, 0}, {9, 0}, {-1, -1}, {0, -9}, {1, -1}}, true),
         OU(14, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}}, false);
 
         private int id;
@@ -64,11 +62,34 @@ public class Constant {
             if(turn == Turn.WHITE) {
                 if (this.tobi == true) {
                     // TODO
+                    for (int[] cell : this.movement) {
+                        int toSuji, toDan;
+                        if (cell[0] == -9 && cell[1] == 9) {
+                            for (toSuji = fromSuji + 1, toDan = fromDan - 1;
+                                 toSuji <= 9 && toDan >= 1;
+                                 toSuji++, toDan--) {
+                                movement.add(new int[]{toSuji, toDan});
+                            }
+                        }
+                        if (cell[0] == 0 && cell[1] == 9) {
+                            toSuji = fromSuji;
+                            for (toDan = fromDan - 1; toDan >= 1; toDan--) {
+                                movement.add(new int[]{toSuji, toDan});
+                            }
+                        }
+                        if (cell[0] == 9 && cell[1] == 9) {
+                            for (toSuji = fromSuji - 1, toDan = fromDan - 1;
+                                 toSuji >= 1 && toDan >= 1;
+                                 toSuji--, toDan--) {
+                                movement.add(new int[]{toSuji, toDan});
+                            }
+                        }
+                    }
                 } else {
                     int toSuji, toDan;
                     for (int[] cell : this.movement) {
-                        toSuji = fromSuji + cell[0];
-                        toDan = fromDan + cell[0];
+                        toSuji = fromSuji - cell[0];
+                        toDan = fromDan - cell[1];
                         if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
                             movement.add(new int[]{toSuji, toDan});
                         }
@@ -80,8 +101,8 @@ public class Constant {
                 } else {
                     int toSuji, toDan;
                     for (int[] cell : this.movement) {
-                        toSuji = fromSuji - cell[0];
-                        toDan = fromDan - cell[0];
+                        toSuji = fromSuji + cell[0];
+                        toDan = fromDan + cell[1];
                         if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
                             movement.add(new int[]{toSuji, toDan});
                         }

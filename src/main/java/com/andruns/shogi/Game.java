@@ -15,23 +15,24 @@ class Game {
     this.player1 = p1;
     this.player2 = p2;
     this.position = p;
-    this.state = GameState.RUNNING;
+    this.state = GameState.STARTING;
   }
 
   public void doGame() {
     while (true) {
+      System.out.println(this.toString());
       if (!doTurn(player1, position)) {
         state = GameState.WIN_BLACK;
         break;
       }
-      System.out.println(this.toString());
 
+      System.out.println(this.toString());
       if (!doTurn(player2, position)) {
         state = GameState.WIN_WHITE;
         break;
       }
-      System.out.println(this.toString());
     }
+    System.out.println(this.toString());
   }
 
   private Boolean doTurn(Player player, Position position) {
@@ -46,6 +47,7 @@ class Game {
     return true;
   }
 
+  @Override
   public String toString() {
     StringBuilder out = new StringBuilder();
     out.append("Status: ").append(state).append("\n");
