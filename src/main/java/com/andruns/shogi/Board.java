@@ -5,7 +5,7 @@ import com.andruns.shogi.Constant.PieceName;
 /**
  * Created by asanu0829 on 3/15/15.
  */
-public class Board {
+public class Board implements Cloneable {
   private short board[][];
 
   Board(){
@@ -24,6 +24,10 @@ public class Board {
     };
   }
 
+  Board(short[][] b) {
+    this.board = b;
+  }
+
   public int getCell(int suji, int dan) {
     return board[suji][dan];
   }
@@ -32,6 +36,18 @@ public class Board {
     board[suji][dan] = (short)piece;
   }
 
+  @Override
+  public Board clone() {
+    Board b = new Board();
+    for(int dan = 1; dan <=9; dan++) {
+      for (int suji = 1; suji <= 9; suji++) {
+        b.board[suji][dan] = this.board[suji][dan];
+      }
+    }
+    return b;
+  }
+
+  @Override
   public String toString() {
     StringBuilder out = new StringBuilder();
     out.append("==============================================\n");

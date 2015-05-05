@@ -40,7 +40,7 @@ class Game {
     do {
       move = player.generateNextMove(position);
       System.out.println(move.toString());
-      if (move.toString() == "0000") {
+      if (move.equals(new Move(0, 0, 0, 0))) {
         return false;
       }
     } while (!position.moveNextBoard(move));

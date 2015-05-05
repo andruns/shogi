@@ -7,16 +7,27 @@ public class Move {
   private final int move[];
 
   Move(int fromSuji, int fromDan, int toSuji, int toDan) {
-    move = new int[]{fromSuji, fromDan, toSuji, toDan};
+    this(fromSuji, fromDan, toSuji, toDan, 0);
+  }
+
+  Move(int fromSuji, int fromDan, int toSuji, int toDan, int isPromoting) {
+    move = new int[]{fromSuji, fromDan, toSuji, toDan, isPromoting};
   }
 
   static Move stringToMove(String strMove) {
-    // TODO: converting like "1234" -> Move(1, 2, 3, 4)
+    // "1234" -> Move(1, 2, 3, 4, 0)
+    // "12340" -> Move(1, 2, 3, 4, 0)
+    // "12341" -> Move(1, 2, 3, 4, 1)
+    int isPromoting = 0;
+    if(strMove.length() == 5 && Integer.parseInt(strMove.substring(4, 5)) == 1) {
+      isPromoting = 1;
+    }
     Move move = new Move(
         Integer.parseInt(strMove.substring(0,1)),
         Integer.parseInt(strMove.substring(1,2)),
         Integer.parseInt(strMove.substring(2,3)),
-        Integer.parseInt(strMove.substring(3,4))
+        Integer.parseInt(strMove.substring(3,4)),
+        isPromoting
     );
     return move;
   }
@@ -37,6 +48,10 @@ public class Move {
     return move[3];
   }
 
+  public boolean isPromoting() {
+    return move[4] == 1;
+  }
+
   @Override public boolean equals(Object o){
     if (o == this)
       return true;
@@ -47,20 +62,17 @@ public class Move {
     return (move.getFromSuji() == this.getFromSuji()
         && move.getFromDan() == this.getFromDan()
         && move.getToSuji() == this.getToSuji()
-        && move.getToDan() == this.getToDan());
+        && move.getToDan() == this.getToDan())
+        && move.isPromoting() == this.isPromoting();
   }
 
   @Override public int hashCode(){
-    int result = 17 + hashDouble(this.getFromSuji());
-    result = 31 * result + hashDouble(this.getFromDan());
-    result = 31 * result + hashDouble(this.getToSuji());
-    result = 31 * result + hashDouble(this.getToDan());
+    int result = 17 + this.getFromSuji();
+    result = 31 * result + this.getFromDan();
+    result = 31 * result + this.getToSuji();
+    result = 31 * result + this.getToDan();
+    result = 31 * result + (this.isPromoting() ? 0 : 1);
     return result;
-  }
-
-  private static int hashDouble(double val){
-    long longBits = Double.doubleToLongBits(val);
-    return (int) (longBits ^ (longBits >>> 32));
   }
 
   @Override
@@ -70,7 +82,8 @@ public class Move {
     out.append(move[0]).append(", ");
     out.append(move[1]).append(", ");
     out.append(move[2]).append(", ");
-    out.append(move[3]);
+    out.append(move[3]).append(", ");
+    out.append(move[4]);
     return out.toString();
   }
 }

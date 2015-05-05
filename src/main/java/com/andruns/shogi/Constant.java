@@ -7,7 +7,7 @@ import java.util.EnumSet;
  * Created by asanu0829 on 3/15/15.
  */
 public class Constant {
-    enum Turn {
+    enum Turn implements Cloneable {
         WHITE,
         BLACK
     }
@@ -38,9 +38,9 @@ public class Constant {
         RY(13, new int[][]{{-1, 1}, {0, 9}, {1, 1}, {-9, 0}, {9, 0}, {-1, -1}, {0, -9}, {1, -1}}, true),
         OU(14, new int[][]{{-1, 1}, {0, 1}, {1, 1}, {-1, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}}, false);
 
-        private int id;
-        private int[][] movement;
-        boolean tobi;
+        private final int id;
+        private final int[][] movement;
+        private final boolean tobi;
 
         private PieceName(int id, int[][] movement, boolean tobi) {
             this.id = id;
@@ -49,67 +49,20 @@ public class Constant {
         }
 
         public static PieceName valueOf(final int value) {
-            for(PieceName p : EnumSet.allOf(PieceName.class)) {
-                if(p.id == value) {
+            for (PieceName p : EnumSet.allOf(PieceName.class)) {
+                if (p.id == value) {
                     return p;
                 }
             }
             return null;
         }
 
-        public ArrayList<int[]> getMovement(int fromSuji, int fromDan, Turn turn) {
-            ArrayList<int[]> movement = new ArrayList<int[]>();
-            if(turn == Turn.WHITE) {
-                if (this.tobi == true) {
-                    // TODO
-                    for (int[] cell : this.movement) {
-                        int toSuji, toDan;
-                        if (cell[0] == -9 && cell[1] == 9) {
-                            for (toSuji = fromSuji + 1, toDan = fromDan - 1;
-                                 toSuji <= 9 && toDan >= 1;
-                                 toSuji++, toDan--) {
-                                movement.add(new int[]{toSuji, toDan});
-                            }
-                        }
-                        if (cell[0] == 0 && cell[1] == 9) {
-                            toSuji = fromSuji;
-                            for (toDan = fromDan - 1; toDan >= 1; toDan--) {
-                                movement.add(new int[]{toSuji, toDan});
-                            }
-                        }
-                        if (cell[0] == 9 && cell[1] == 9) {
-                            for (toSuji = fromSuji - 1, toDan = fromDan - 1;
-                                 toSuji >= 1 && toDan >= 1;
-                                 toSuji--, toDan--) {
-                                movement.add(new int[]{toSuji, toDan});
-                            }
-                        }
-                    }
-                } else {
-                    int toSuji, toDan;
-                    for (int[] cell : this.movement) {
-                        toSuji = fromSuji - cell[0];
-                        toDan = fromDan - cell[1];
-                        if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
-                            movement.add(new int[]{toSuji, toDan});
-                        }
-                    }
-                }
-            } else {
-                if (this.tobi == true) {
-                    // TODO
-                } else {
-                    int toSuji, toDan;
-                    for (int[] cell : this.movement) {
-                        toSuji = fromSuji + cell[0];
-                        toDan = fromDan + cell[1];
-                        if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
-                            movement.add(new int[]{toSuji, toDan});
-                        }
-                    }
-                }
-            }
+        public int[][] getMovement() {
             return movement;
+        }
+
+        public boolean isTobi() {
+            return tobi;
         }
     }
 }
