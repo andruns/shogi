@@ -3,12 +3,13 @@ package com.andruns.shogi;
 import com.andruns.shogi.Constant.Turn;
 import com.andruns.shogi.Constant.PieceName;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by asanu0829 on 5/6/15.
  */
 public class MoveUtils {
-  static public ArrayList<int[]> getMovesPerPieceOnBoard(
+  static ArrayList<int[]> getMovesPerPieceOnBoard(
       Position position, int pieceID, final int fromSuji, final int fromDan) {
     Turn turn = position.getTurn();
     Board board = position.getBoard();
@@ -314,48 +315,86 @@ public class MoveUtils {
     return movements;
   }
 
-  static void moveTryNextBoard(Position position, Move move) {
+  static ArrayList<Move> getMovesPreCheckFilter(Position position) {
     Turn turn = position.getTurn();
     Board board = position.getBoard();
     int[] piecesWhiteInHand = position.getWhitePiecesInHand();
     int[] piecesBlackInHand = position.getBlackPiecesInHand();
-    int fromSuji = move.getFromSuji();
-    int fromDan = move.getFromDan();
-    int toSuji = move.getToSuji();
-    int toDan = move.getToDan();
-    boolean promoting = move.isPromoting();
-    if(fromSuji == 0) {
-      if (turn == Turn.WHITE) {
-        piecesWhiteInHand[fromDan]--;
-        board.setCell(toSuji, toDan, fromDan);
-      } else {
-        piecesBlackInHand[fromDan]--;
-        board.setCell(toSuji, toDan, -fromDan);
-      }
-    } else {
-      int toPiece = board.getCell(toSuji, toDan);
-      if(Math.abs(toPiece) == PieceName.OU.getId()) {
-        return;
-      }
-      int fromPiece = board.getCell(fromSuji, fromDan);
-      if (promoting) {
-        fromPiece = (int)Math.signum(fromPiece)
-            * PieceName.valueOf(Math.abs(fromPiece)).getPromotedPieceID();
-      }
-      board.setCell(toSuji, toDan, fromPiece);
-      board.setCell(fromSuji, fromDan, 0);
-      if (toPiece != 0) {
-        toPiece = Math.abs(toPiece);
-        if(PieceName.valueOf(toPiece).isPromoted()) {
-          toPiece = PieceName.valueOf(toPiece).getDemotedPieceID();
-        }
-        if (turn == Turn.WHITE) {
-          piecesWhiteInHand[toPiece]++;
-        } else {
-          piecesBlackInHand[toPiece]++;
+    ArrayList<Move> moves = new ArrayList<Move>();
+    int pieceID;
+
+    // from board
+    for(int dan = 1; dan <=9; dan++) {
+      for(int suji = 1; suji <= 9; suji++) {
+        if((turn == Turn.WHITE && board.getCell(suji, dan) > 0) ||
+            (turn == Turn.BLACK && board.getCell(suji, dan) < 0)) {
+          pieceID = Math.abs(board.getCell(suji, dan));
+          for(int[] movement: MoveUtils.getMovesPerPieceOnBoard(position, pieceID, suji, dan)) {
+            moves.add(new Move(suji, dan, movement[0], movement[1], movement[2]));
+          }
         }
       }
     }
-    turn = turn == Turn.WHITE ? Turn.BLACK : Turn.WHITE;
+
+    // from pieces in hand
+    if (turn == Turn.WHITE) {
+      for (int i = 1; i <= 7; i++) {
+        if (piecesWhiteInHand[i] > 0) {
+          for (int dan = 1; dan <= 9; dan++) {
+            for (int suji = 1; suji <= 9; suji++) {
+              if (board.getCell(suji, dan) == 0) {
+                if(PieceName.valueOf(i) != PieceName.KE || dan > 2) {
+                  if ((PieceName.valueOf(i) != PieceName.FU && PieceName.valueOf(i) != PieceName.KY)
+                      || dan != 1) {
+                    moves.add(new Move(0, i, suji, dan));
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } else {
+      for (int i = 1; i <= 7; i++) {
+        if (piecesBlackInHand[i] > 0) {
+          for (int dan = 1; dan <= 9; dan++) {
+            for (int suji = 1; suji <= 9; suji++) {
+              if (board.getCell(suji, dan) == 0) {
+                if(PieceName.valueOf(i) != PieceName.KE || dan < 8) {
+                  if ((PieceName.valueOf(i) != PieceName.FU && PieceName.valueOf(i) != PieceName.KY)
+                      || dan != 9) {
+                    moves.add(new Move(0, i, suji, dan));
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return moves;
+  }
+
+  static void filterCheck(Position position, ArrayList<Move> moves){
+    Iterator<Move> iMoves = moves.iterator();
+    Position cPosition;
+    while(iMoves.hasNext()) {
+      Move move = iMoves.next();
+      cPosition = position.clone();
+      cPosition.moveTryNextBoard(move);
+      for (int dan = 1; dan <= 9; dan++) {
+        for (int suji = 1; suji <= 9; suji++) {
+          if((cPosition.getTurn() == Turn.BLACK && cPosition.getBoard().getCell(suji, dan) == PieceName.OU.getId()) ||
+              (cPosition.getTurn() == Turn.WHITE && cPosition.getBoard().getCell(suji, dan) == -PieceName.OU.getId())) {
+            for(Move m: MoveUtils.getMovesPreCheckFilter(cPosition)) {
+              if(m.getToSuji() == suji && m.getToDan() == dan) {
+                iMoves.remove();
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

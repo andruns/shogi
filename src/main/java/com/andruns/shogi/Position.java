@@ -20,10 +20,10 @@ public class Position implements Cloneable {
         this(Turn.WHITE, new Board(), new int[8], new int[8]);
     }
 
-    // TODO: start from suspended position
-    Position(Board b) {
-        this(Turn.WHITE, b, new int[8], new int[8]);
-    }
+//    TODO: start from suspended position
+//    Position(Board b) {
+//        this(Turn.WHITE, b, new int[8], new int[8]);
+//    }
 
     Position(Turn t, Board b, int[] pW, int[] pB) {
         this.turn = t;
@@ -77,98 +77,6 @@ public class Position implements Cloneable {
         return true;
     }
 
-    public ArrayList<Move> getMoves() {
-        ArrayList<Move> moves = getMovesPreCheckFilter();
-        filterCheck(moves);
-        return moves;
-    }
-
-    public ArrayList<Move> getMovesPreCheckFilter() {
-        ArrayList<Move> moves = new ArrayList<Move>();
-        int pieceID;
-
-        // from board
-        for(int dan = 1; dan <=9; dan++) {
-            for(int suji = 1; suji <= 9; suji++) {
-                if((turn == Turn.WHITE && board.getCell(suji, dan) > 0) ||
-                    (turn == Turn.BLACK && board.getCell(suji, dan) < 0)) {
-                    pieceID = Math.abs(board.getCell(suji, dan));
-                    for(int[] movement: MoveUtils.getMovesPerPieceOnBoard(this, pieceID, suji, dan)) {
-                        moves.add(new Move(suji, dan, movement[0], movement[1], movement[2]));
-                    }
-                }
-            }
-        }
-
-        // from pieces in hand
-        if (turn == Turn.WHITE) {
-            for (int i = 1; i <= 7; i++) {
-                if (piecesWhiteInHand[i] > 0) {
-                    for (int dan = 1; dan <= 9; dan++) {
-                        for (int suji = 1; suji <= 9; suji++) {
-                            if (board.getCell(suji, dan) == 0) {
-                                if(PieceName.valueOf(i) != PieceName.KE || dan > 2) {
-                                    if ((PieceName.valueOf(i) != PieceName.FU && PieceName.valueOf(i) != PieceName.KY)
-                                        || dan != 1) {
-                                        moves.add(new Move(0, i, suji, dan));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            for (int i = 1; i <= 7; i++) {
-                if (piecesBlackInHand[i] > 0) {
-                    for (int dan = 1; dan <= 9; dan++) {
-                        for (int suji = 1; suji <= 9; suji++) {
-                            if (board.getCell(suji, dan) == 0) {
-                                if(PieceName.valueOf(i) != PieceName.KE || dan < 8) {
-                                    if ((PieceName.valueOf(i) != PieceName.FU && PieceName.valueOf(i) != PieceName.KY)
-                                        || dan != 9) {
-                                        moves.add(new Move(0, i, suji, dan));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return moves;
-    }
-
-    boolean isValidMove(Move move) {
-        ArrayList<Move> moves = getMoves();
-        return moves.contains(move);
-    }
-
-    // TODO
-    void filterCheck(ArrayList<Move> moves){
-        Iterator<Move> iMoves = moves.iterator();
-        Position position;
-        while(iMoves.hasNext()) {
-            Move move = iMoves.next();
-            position = this.clone();
-            position.moveTryNextBoard(move);
-//            MoveUtils.moveTryNextBoard(position, move);
-            for (int dan = 1; dan <= 9; dan++) {
-                for (int suji = 1; suji <= 9; suji++) {
-                    if((position.turn == Turn.BLACK && position.board.getCell(suji, dan) == PieceName.OU.getId()) ||
-                        (position.turn == Turn.WHITE && position.board.getCell(suji, dan) == -PieceName.OU.getId())) {
-                        for(Move m: position.getMovesPreCheckFilter()) {
-                            if(m.getToSuji() == suji && m.getToDan() == dan) {
-                                iMoves.remove();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     void moveTryNextBoard(Move move) {
         int fromSuji = move.getFromSuji();
         int fromDan = move.getFromDan();
@@ -207,7 +115,18 @@ public class Position implements Cloneable {
                 }
             }
         }
-        turn = turn == Turn.WHITE ? Turn.BLACK : Turn.WHITE;
+        setTurn(turn == Turn.WHITE ? Turn.BLACK : Turn.WHITE);
+    }
+
+    public boolean isValidMove(Move move) {
+        ArrayList<Move> moves = getMoves();
+        return moves.contains(move);
+    }
+
+    public ArrayList<Move> getMoves() {
+        ArrayList<Move> moves = MoveUtils.getMovesPreCheckFilter(this);
+        MoveUtils.filterCheck(this, moves);
+        return moves;
     }
 
     public Board getBoard() {
@@ -216,6 +135,10 @@ public class Position implements Cloneable {
 
     public Turn getTurn() {
         return turn;
+    }
+
+    public void setTurn(Turn turn) {
+        this.turn = turn;
     }
 
     public int[] getWhitePiecesInHand() {
@@ -238,6 +161,20 @@ public class Position implements Cloneable {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (o == this)
+            return true;
+        if (!(o instanceof Position))
+            return false;
+        Position p = (Position) o;
+
+        return this.turn == p.turn
+            && this.board.equals(p.board)
+            && Arrays.equals(this.piecesWhiteInHand, p.piecesWhiteInHand)
+            && Arrays.equals(this.piecesBlackInHand, p.piecesBlackInHand);
     }
 
     @Override

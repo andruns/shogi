@@ -47,6 +47,23 @@ public class Board implements Cloneable {
     return b;
   }
 
+  @Override public boolean equals(Object o){
+    if (o == this)
+      return true;
+    if (!(o instanceof Board))
+      return false;
+    Board b = (Board) o;
+
+    for(int dan = 1; dan <=9; dan++) {
+      for (int suji = 1; suji <= 9; suji++) {
+        if(this.board[suji][dan] != b.board[suji][dan]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   @Override
   public String toString() {
     StringBuilder out = new StringBuilder();
