@@ -38,6 +38,7 @@ public class Position implements Cloneable {
         int fromDan = move.getFromDan();
         int toSuji = move.getToSuji();
         int toDan = move.getToDan();
+        boolean promoting = move.isPromoting();
         if(!isValidMove(move)) {
             return false;
         }
@@ -51,11 +52,23 @@ public class Position implements Cloneable {
             }
         } else {
             int toPiece = board.getCell(toSuji, toDan);
-            board.setCell(toSuji, toDan, board.getCell(fromSuji, fromDan));
+            if(Math.abs(toPiece) == PieceName.OU.getId()) {
+                return false;
+            }
+            int fromPiece = board.getCell(fromSuji, fromDan);
+            if (promoting) {
+                fromPiece = (int)Math.signum(fromPiece)
+                    * PieceName.valueOf(Math.abs(fromPiece)).getPromotedPieceID();
+            }
+            board.setCell(toSuji, toDan, fromPiece);
             board.setCell(fromSuji, fromDan, 0);
             if (toPiece != 0) {
+                toPiece = Math.abs(toPiece);
+                if(PieceName.valueOf(toPiece).isPromoted()) {
+                    toPiece = PieceName.valueOf(toPiece).getDemotedPieceID();
+                }
                 if (turn == Turn.WHITE) {
-                    piecesWhiteInHand[Math.abs(toPiece)]++;
+                    piecesWhiteInHand[toPiece]++;
                 } else {
                     piecesBlackInHand[toPiece]++;
                 }
@@ -82,7 +95,7 @@ public class Position implements Cloneable {
                     (turn == Turn.BLACK && board.getCell(suji, dan) < 0)) {
                     pieceID = Math.abs(board.getCell(suji, dan));
                     for(int[] movement: getMovesPerPieceOnBoard(pieceID, suji, dan)) {
-                        moves.add(new Move(suji, dan, movement[0], movement[1]));
+                        moves.add(new Move(suji, dan, movement[0], movement[1], movement[2]));
                     }
                 }
             }
@@ -139,7 +152,12 @@ public class Position implements Cloneable {
                              toSuji <= 9 && toDan >= 1;
                              toSuji++, toDan--) {
                             if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -150,7 +168,12 @@ public class Position implements Cloneable {
                         toSuji = fromSuji;
                         for (toDan = fromDan - 1; toDan >= 1; toDan--) {
                             if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -162,7 +185,12 @@ public class Position implements Cloneable {
                              toSuji >= 1 && toDan >= 1;
                              toSuji--, toDan--) {
                             if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -173,7 +201,12 @@ public class Position implements Cloneable {
                         toDan = fromDan;
                         for (toSuji = fromSuji + 1; toSuji <= 9; toSuji++) {
                             if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -184,7 +217,12 @@ public class Position implements Cloneable {
                         toDan = fromDan;
                         for (toSuji = fromSuji - 1; toSuji >= 1; toSuji--) {
                             if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -196,7 +234,12 @@ public class Position implements Cloneable {
                              toSuji <= 9 && toDan <= 9;
                              toSuji++, toDan++) {
                             if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -207,7 +250,12 @@ public class Position implements Cloneable {
                         toSuji = fromSuji;
                         for (toDan = fromDan + 1; toDan <= 9; toDan++) {
                             if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -219,7 +267,12 @@ public class Position implements Cloneable {
                              toSuji >= 1 && toDan <= 9;
                              toSuji--, toDan++) {
                             if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -234,8 +287,13 @@ public class Position implements Cloneable {
                 if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
                     if(piece != PieceName.KE || toDan > 2) {
                         if((piece != PieceName.FU && piece != PieceName.KY) || toDan != 1) {
-                            if (board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                            if(board.getCell(toSuji, toDan) <= 0) {
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan <= 3 || fromDan <= 3) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                         }
                     }
@@ -250,7 +308,10 @@ public class Position implements Cloneable {
                              toSuji >= 1 && toDan <= 9;
                              toSuji--, toDan++) {
                             if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (toDan >= 7 || fromDan >= 7) {
+                                    movements.add(new int[]{toSuji, toDan, 1});
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -261,7 +322,10 @@ public class Position implements Cloneable {
                         toSuji = fromSuji;
                         for (toDan = fromDan + 1; toDan <= 9; toDan++) {
                             if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (toDan >= 7 || fromDan >= 7) {
+                                    movements.add(new int[]{toSuji, toDan, 1});
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -273,7 +337,10 @@ public class Position implements Cloneable {
                              toSuji <= 9 && toDan <= 9;
                              toSuji++, toDan++) {
                             if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (toDan >= 7 || fromDan >= 7) {
+                                    movements.add(new int[]{toSuji, toDan, 1});
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -284,7 +351,10 @@ public class Position implements Cloneable {
                         toDan = fromDan;
                         for (toSuji = fromSuji - 1; toSuji >= 1; toSuji--) {
                             if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (toDan >= 7 || fromDan >= 7) {
+                                    movements.add(new int[]{toSuji, toDan, 1});
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -295,7 +365,10 @@ public class Position implements Cloneable {
                         toDan = fromDan;
                         for (toSuji = fromSuji + 1; toSuji <= 9; toSuji++) {
                             if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (toDan >= 7 || fromDan >= 7) {
+                                    movements.add(new int[]{toSuji, toDan, 1});
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -307,7 +380,10 @@ public class Position implements Cloneable {
                              toSuji >= 1 && toDan >= 1;
                              toSuji--, toDan--) {
                             if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (toDan >= 7 || fromDan >= 7) {
+                                    movements.add(new int[]{toSuji, toDan, 1});
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -318,7 +394,10 @@ public class Position implements Cloneable {
                         toSuji = fromSuji;
                         for (toDan = fromDan - 1; toDan >= 1; toDan--) {
                             if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (toDan >= 7 || fromDan >= 7) {
+                                    movements.add(new int[]{toSuji, toDan, 1});
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -330,7 +409,10 @@ public class Position implements Cloneable {
                              toSuji <= 9 && toDan >= 1;
                              toSuji++, toDan--) {
                             if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (toDan >= 7 || fromDan >= 7) {
+                                    movements.add(new int[]{toSuji, toDan, 1});
+                                }
                             }
                             if(board.getCell(toSuji, toDan) != 0) {
                                 break;
@@ -346,7 +428,12 @@ public class Position implements Cloneable {
                     if(piece != PieceName.KE || toDan < 8) {
                         if((piece != PieceName.FU && piece != PieceName.KY) || toDan != 9) {
                             if (board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan});
+                                movements.add(new int[]{toSuji, toDan, 0});
+                                if (piece.isPromotable()) {
+                                    if (toDan >= 7 || fromDan >= 7) {
+                                        movements.add(new int[]{toSuji, toDan, 1});
+                                    }
+                                }
                             }
                         }
                     }
@@ -371,11 +458,12 @@ public class Position implements Cloneable {
             position.moveTryNextBoard(move);
             for (int dan = 1; dan <= 9; dan++) {
                 for (int suji = 1; suji <= 9; suji++) {
-                    if((position.turn == Turn.BLACK && position.board.getCell(suji, dan) == 14) ||
-                        (position.turn == Turn.WHITE && position.board.getCell(suji, dan) == -14)) {
+                    if((position.turn == Turn.BLACK && position.board.getCell(suji, dan) == PieceName.OU.getId()) ||
+                        (position.turn == Turn.WHITE && position.board.getCell(suji, dan) == -PieceName.OU.getId())) {
                         for(Move m: position.getMovesPreCheckFilter()) {
                             if(m.getToSuji() == suji && m.getToDan() == dan) {
                                 iMoves.remove();
+                                break;
                             }
                         }
                     }
@@ -389,6 +477,7 @@ public class Position implements Cloneable {
         int fromDan = move.getFromDan();
         int toSuji = move.getToSuji();
         int toDan = move.getToDan();
+        boolean promoting = move.isPromoting();
         if(fromSuji == 0) {
             if (turn == Turn.WHITE) {
                 piecesWhiteInHand[fromDan]--;
@@ -399,11 +488,23 @@ public class Position implements Cloneable {
             }
         } else {
             int toPiece = board.getCell(toSuji, toDan);
-            board.setCell(toSuji, toDan, board.getCell(fromSuji, fromDan));
+            if(Math.abs(toPiece) == PieceName.OU.getId()) {
+                return;
+            }
+            int fromPiece = board.getCell(fromSuji, fromDan);
+            if (promoting) {
+                fromPiece = (int)Math.signum(fromPiece)
+                    * PieceName.valueOf(Math.abs(fromPiece)).getPromotedPieceID();
+            }
+            board.setCell(toSuji, toDan, fromPiece);
             board.setCell(fromSuji, fromDan, 0);
             if (toPiece != 0) {
+                toPiece = Math.abs(toPiece);
+                if(PieceName.valueOf(toPiece).isPromoted()) {
+                    toPiece = PieceName.valueOf(toPiece).getDemotedPieceID();
+                }
                 if (turn == Turn.WHITE) {
-                    piecesWhiteInHand[Math.abs(toPiece)]++;
+                    piecesWhiteInHand[toPiece]++;
                 } else {
                     piecesBlackInHand[toPiece]++;
                 }
