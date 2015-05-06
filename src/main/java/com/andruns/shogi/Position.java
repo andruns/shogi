@@ -2,7 +2,6 @@ package com.andruns.shogi;
 
 import com.andruns.shogi.Constant.Turn;
 import com.andruns.shogi.Constant.PieceName;
-import javafx.geometry.Pos;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,7 +93,7 @@ public class Position implements Cloneable {
                 if((turn == Turn.WHITE && board.getCell(suji, dan) > 0) ||
                     (turn == Turn.BLACK && board.getCell(suji, dan) < 0)) {
                     pieceID = Math.abs(board.getCell(suji, dan));
-                    for(int[] movement: getMovesPerPieceOnBoard(pieceID, suji, dan)) {
+                    for(int[] movement: MoveUtils.getMovesPerPieceOnBoard(this, pieceID, suji, dan)) {
                         moves.add(new Move(suji, dan, movement[0], movement[1], movement[2]));
                     }
                 }
@@ -140,309 +139,6 @@ public class Position implements Cloneable {
         return moves;
     }
 
-    public ArrayList<int[]> getMovesPerPieceOnBoard(int pieceID, final int fromSuji, final int fromDan) {
-        PieceName piece = PieceName.valueOf(pieceID);
-        ArrayList<int[]> movements = new ArrayList<int[]>();
-        if(turn == Turn.WHITE) {
-            int toSuji, toDan;
-            if (piece.isTobi()) {
-                for (int[] cell : piece.getMovement()) {
-                    if (cell[0] == -9 && cell[1] == 9) {
-                        for (toSuji = fromSuji + 1, toDan = fromDan - 1;
-                             toSuji <= 9 && toDan >= 1;
-                             toSuji++, toDan--) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 0 && cell[1] == 9) {
-                        toSuji = fromSuji;
-                        for (toDan = fromDan - 1; toDan >= 1; toDan--) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 9 && cell[1] == 9) {
-                        for (toSuji = fromSuji - 1, toDan = fromDan - 1;
-                             toSuji >= 1 && toDan >= 1;
-                             toSuji--, toDan--) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == -9 && cell[1] == 0) {
-                        toDan = fromDan;
-                        for (toSuji = fromSuji + 1; toSuji <= 9; toSuji++) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 9 && cell[1] == 0) {
-                        toDan = fromDan;
-                        for (toSuji = fromSuji - 1; toSuji >= 1; toSuji--) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == -9 && cell[1] == -9) {
-                        for (toSuji = fromSuji + 1, toDan = fromDan + 1;
-                             toSuji <= 9 && toDan <= 9;
-                             toSuji++, toDan++) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 0 && cell[1] == -9) {
-                        toSuji = fromSuji;
-                        for (toDan = fromDan + 1; toDan <= 9; toDan++) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 9 && cell[1] == -9) {
-                        for (toSuji = fromSuji - 1, toDan = fromDan + 1;
-                             toSuji >= 1 && toDan <= 9;
-                             toSuji--, toDan++) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            for (int[] cell : piece.getMovement()) {
-                toSuji = fromSuji - cell[0];
-                toDan = fromDan - cell[1];
-                if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
-                    if(piece != PieceName.KE || toDan > 2) {
-                        if((piece != PieceName.FU && piece != PieceName.KY) || toDan != 1) {
-                            if(board.getCell(toSuji, toDan) <= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan <= 3 || fromDan <= 3) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            int toSuji, toDan;
-            if (piece.isTobi()) {
-                for (int[] cell : piece.getMovement()) {
-                    if (cell[0] == -9 && cell[1] == 9) {
-                        for (toSuji = fromSuji - 1, toDan = fromDan + 1;
-                             toSuji >= 1 && toDan <= 9;
-                             toSuji--, toDan++) {
-                            if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (toDan >= 7 || fromDan >= 7) {
-                                    movements.add(new int[]{toSuji, toDan, 1});
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 0 && cell[1] == 9) {
-                        toSuji = fromSuji;
-                        for (toDan = fromDan + 1; toDan <= 9; toDan++) {
-                            if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (toDan >= 7 || fromDan >= 7) {
-                                    movements.add(new int[]{toSuji, toDan, 1});
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 9 && cell[1] == 9) {
-                        for (toSuji = fromSuji + 1, toDan = fromDan + 1;
-                             toSuji <= 9 && toDan <= 9;
-                             toSuji++, toDan++) {
-                            if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (toDan >= 7 || fromDan >= 7) {
-                                    movements.add(new int[]{toSuji, toDan, 1});
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == -9 && cell[1] == 0) {
-                        toDan = fromDan;
-                        for (toSuji = fromSuji - 1; toSuji >= 1; toSuji--) {
-                            if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (toDan >= 7 || fromDan >= 7) {
-                                    movements.add(new int[]{toSuji, toDan, 1});
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 9 && cell[1] == 0) {
-                        toDan = fromDan;
-                        for (toSuji = fromSuji + 1; toSuji <= 9; toSuji++) {
-                            if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (toDan >= 7 || fromDan >= 7) {
-                                    movements.add(new int[]{toSuji, toDan, 1});
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == -9 && cell[1] == -9) {
-                        for (toSuji = fromSuji - 1, toDan = fromDan - 1;
-                             toSuji >= 1 && toDan >= 1;
-                             toSuji--, toDan--) {
-                            if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (toDan >= 7 || fromDan >= 7) {
-                                    movements.add(new int[]{toSuji, toDan, 1});
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 0 && cell[1] == -9) {
-                        toSuji = fromSuji;
-                        for (toDan = fromDan - 1; toDan >= 1; toDan--) {
-                            if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (toDan >= 7 || fromDan >= 7) {
-                                    movements.add(new int[]{toSuji, toDan, 1});
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                    if (cell[0] == 9 && cell[1] == -9) {
-                        for (toSuji = fromSuji + 1, toDan = fromDan - 1;
-                             toSuji <= 9 && toDan >= 1;
-                             toSuji++, toDan--) {
-                            if(board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (toDan >= 7 || fromDan >= 7) {
-                                    movements.add(new int[]{toSuji, toDan, 1});
-                                }
-                            }
-                            if(board.getCell(toSuji, toDan) != 0) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            for (int[] cell : piece.getMovement()) {
-                toSuji = fromSuji + cell[0];
-                toDan = fromDan + cell[1];
-                if(1 <= toSuji && toSuji <= 9 && 1 <= toDan && toDan <= 9) {
-                    if(piece != PieceName.KE || toDan < 8) {
-                        if((piece != PieceName.FU && piece != PieceName.KY) || toDan != 9) {
-                            if (board.getCell(toSuji, toDan) >= 0) {
-                                movements.add(new int[]{toSuji, toDan, 0});
-                                if (piece.isPromotable()) {
-                                    if (toDan >= 7 || fromDan >= 7) {
-                                        movements.add(new int[]{toSuji, toDan, 1});
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return movements;
-    }
-
     boolean isValidMove(Move move) {
         ArrayList<Move> moves = getMoves();
         return moves.contains(move);
@@ -456,6 +152,7 @@ public class Position implements Cloneable {
             Move move = iMoves.next();
             position = this.clone();
             position.moveTryNextBoard(move);
+//            MoveUtils.moveTryNextBoard(position, move);
             for (int dan = 1; dan <= 9; dan++) {
                 for (int suji = 1; suji <= 9; suji++) {
                     if((position.turn == Turn.BLACK && position.board.getCell(suji, dan) == PieceName.OU.getId()) ||
@@ -511,6 +208,22 @@ public class Position implements Cloneable {
             }
         }
         turn = turn == Turn.WHITE ? Turn.BLACK : Turn.WHITE;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public Turn getTurn() {
+        return turn;
+    }
+
+    public int[] getWhitePiecesInHand() {
+        return piecesWhiteInHand;
+    }
+
+    public int[] getBlackPiecesInHand() {
+        return piecesBlackInHand;
     }
 
     @Override
