@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-public class PositionTest extends TestCase {
+public class TestPosition extends TestCase {
 
   @Test
   public void testMoveNextBoard() throws Exception {
@@ -130,5 +130,33 @@ public class PositionTest extends TestCase {
     int[] blackPiecesInHand = {0, 0, 0, 0, 0, 0, 0, 0};
     Position ePosition = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
     assertEquals(ePosition, position);
+  }
+
+  @Test
+  public void testKEIMove() throws Exception {
+    Board board = new Board( new short[][]{
+        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   3,  0,  0,  0, -3,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    });
+    int[] whitePiecesInHand = {0, 0, 0, 0, 0, 0, 0, 0};
+    int[] blackPiecesInHand = {0, 0, 0, 0, 0, 0, 0, 0};
+    Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
+    ArrayList<Move> moves = position.getMoves();
+    assertTrue(moves.contains(new Move(5, 3, 4, 1, 1)));
+    assertTrue(moves.contains(new Move(5, 3, 6, 1, 1)));
+
+    Position position2 = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
+    ArrayList<Move> moves2 = position2.getMoves();
+    assertTrue(moves2.contains(new Move(5, 7, 4, 9, 1)));
+    assertTrue(moves2.contains(new Move(5, 7, 6, 9, 1)));
   }
 }

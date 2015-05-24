@@ -1,7 +1,5 @@
 package com.andruns.shogi;
 
-import com.andruns.shogi.Constant.PieceName;
-
 /**
  * Created by asanu0829 on 3/15/15.
  */
@@ -72,11 +70,11 @@ public class Board implements Cloneable {
       for(int suji = 9; suji >= 1; suji--) {
         out.append("|");
         if(Math.signum(board[suji][dan]) < 0) {
-          out.append(String.format("%1$4s", "-" + PieceName.valueOf(Math.abs(board[suji][dan]))));
+          out.append(String.format("%1$4s", "-" + Piece.valueOf(Math.abs(board[suji][dan]))));
         } else if (Math.signum(board[suji][dan]) == 0) {
           out.append("    ");
         } else {
-          out.append(String.format("%1$4s", PieceName.valueOf(board[suji][dan])));
+          out.append(String.format("%1$4s", Piece.valueOf(board[suji][dan])));
         }
       }
       out.append("|\n");
