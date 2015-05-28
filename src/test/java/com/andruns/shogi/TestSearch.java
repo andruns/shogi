@@ -46,6 +46,7 @@ public class TestSearch extends TestCase {
 
     res = search.searchMinMax(position, ef, 3, 3);
     assertEquals(13, res.getValue());
+
     assertEquals(new Move(5, 7, 5, 2, 0, 2), res.getBestMoves().get(0));
 
     position = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
@@ -383,30 +384,5 @@ public class TestSearch extends TestCase {
     Search search = new Search();
     search.searchNegaAlfa(position, ef, 2, true);
     assertEquals(MoveUtils.stringToMove("0552", position), search.getBestMove());
-  }
-
-  @Test
-  public void testUchiFuMate() throws Exception {
-    Board board = new Board(new short[][]{
-        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
-        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
-        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
-        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
-        {99,-2, 0, 0, 0, 0, 0, 0, 0, 0, 99},
-        {99,-14,0, 4, 0, 0, 0, 0, 0, 0, 99},
-        {99,-2, 0, 0, 0, 0, 0, 0, 0, 0, 99},
-        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
-        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
-        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
-        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
-    });
-    int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
-    int[] blackPiecesInHand = {0, 0, 0, 0, 0, 0, 0, 0};
-    Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
-    System.out.println(position.toString());
-    EvaluateFunction ef = new EvaluateTestFunction();
-    Search search = new Search();
-    search.searchNegaAlfa(position, ef, 2, true);
-    assertFalse(MoveUtils.stringToMove("0152", position) == search.getBestMove());
   }
 }
