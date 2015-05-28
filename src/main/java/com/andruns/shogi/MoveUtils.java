@@ -1,6 +1,9 @@
 package com.andruns.shogi;
 
 import com.andruns.shogi.Constant.Turn;
+
+import java.io.IOError;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -321,6 +324,9 @@ public class MoveUtils {
     int[] piecesBlackInHand = position.getBlackPiecesInHand();
     ArrayList<Move> moves = new ArrayList<Move>();
     int pieceID;
+    int toSuji;
+    int toDan;
+    int toPieceID;
 
     // from board
     for(int dan = 1; dan <=9; dan++) {
@@ -329,7 +335,8 @@ public class MoveUtils {
             (turn == Turn.BLACK && board.getCell(suji, dan) < 0)) {
           pieceID = Math.abs(board.getCell(suji, dan));
           for(int[] movement: MoveUtils.getMovesPerPieceOnBoard(position, pieceID, suji, dan)) {
-            moves.add(new Move(suji, dan, movement[0], movement[1], movement[2]));
+            toPieceID = Math.abs(board.getCell(movement[0], movement[1]));
+            moves.add(new Move(suji, dan, movement[0], movement[1], movement[2], toPieceID));
           }
         }
       }
@@ -374,13 +381,14 @@ public class MoveUtils {
     return moves;
   }
 
-  static void filterCheck(Position position, ArrayList<Move> moves){
+  static void filterInvalidMove(Position position, ArrayList<Move> moves) {
     Iterator<Move> iMoves = moves.iterator();
     Position cPosition;
-    while(iMoves.hasNext()) {
+    loop1: while(iMoves.hasNext()) {
       Move move = iMoves.next();
       cPosition = position.clone();
       cPosition.moveTryNextBoard(move);
+      // filter check
       for (int dan = 1; dan <= 9; dan++) {
         for (int suji = 1; suji <= 9; suji++) {
           if((cPosition.getTurn() == Turn.BLACK && cPosition.getBoard().getCell(suji, dan) == Piece.OU.getId()) ||
@@ -388,12 +396,53 @@ public class MoveUtils {
             for(Move m: MoveUtils.getMovesPreCheckFilter(cPosition)) {
               if(m.getToSuji() == suji && m.getToDan() == dan) {
                 iMoves.remove();
-                break;
+                continue loop1;
               }
             }
           }
         }
       }
+
+      int numWhiteFu = 0;
+      int numBlackFu = 0;
+      if(move.getFromSuji() == 0 && move.getFromDan() == 1) {
+        // filter nifu
+        for (int dan = 1; dan <= 9; dan++) {
+          if(cPosition.getBoard().getCell(move.getToSuji(), dan) == Piece.FU.getId())  numWhiteFu++;
+          if(cPosition.getBoard().getCell(move.getToSuji(), dan) == -Piece.FU.getId()) numBlackFu++;
+        }
+        if(numWhiteFu == 2 || numBlackFu == 2){
+          iMoves.remove();
+          continue loop1;
+        }
+
+        // filter uchifu
+//        if(cPosition.getMoves().size() == 0) {
+//          iMoves.remove();
+//          continue loop1;
+//        }
+      }
     }
+  }
+
+  static Move stringToMove(String strMove, Position position) {
+    int isPromoting = 0;
+    if(strMove.length() == 5 && Integer.parseInt(strMove.substring(4, 5)) == 1) {
+      isPromoting = 1;
+    }
+    int fromSuji = Integer.parseInt(strMove.substring(0, 1));
+    int fromDan = Integer.parseInt(strMove.substring(1, 2));
+    int toSuji = Integer.parseInt(strMove.substring(2, 3));
+    int toDan= Integer.parseInt(strMove.substring(3, 4));
+    int toPieceID = Math.abs(position.getBoard().getCell(toSuji, toDan));
+    Move move = new Move(
+        fromSuji,
+        fromDan,
+        toSuji,
+        toDan,
+        isPromoting,
+        toPieceID
+    );
+    return move;
   }
 }

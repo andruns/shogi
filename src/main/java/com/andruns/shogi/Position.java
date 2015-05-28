@@ -40,6 +40,11 @@ public class Position implements Cloneable {
         return true;
     }
 
+    public Boolean moveNextBoard(String strMove) {
+        Move move = MoveUtils.stringToMove(strMove, this);
+        return moveNextBoard(move);
+    }
+
     void moveTryNextBoard(Move move) {
         int fromSuji = move.getFromSuji();
         int fromDan = move.getFromDan();
@@ -81,6 +86,46 @@ public class Position implements Cloneable {
         setTurn(turn == Turn.WHITE ? Turn.BLACK : Turn.WHITE);
     }
 
+    public Boolean moveBackBoard(Move move) {
+        int fromSuji = move.getFromSuji();
+        int fromDan = move.getFromDan();
+        int toSuji = move.getToSuji();
+        int toDan = move.getToDan();
+        int toPieceID = move.getToPieceID();
+        boolean promoting = move.isPromoting();
+        if(fromSuji == 0) {
+            if (turn == Turn.WHITE) {
+                piecesBlackInHand[fromDan]++;
+            } else {
+                piecesWhiteInHand[fromDan]++;
+            }
+        } else {
+            int newToPieceID = board.getCell(toSuji, toDan);
+            if (promoting) {
+                newToPieceID = (int)Math.signum(newToPieceID)
+                    * Piece.valueOf(Math.abs(newToPieceID)).getDemotedPieceID();
+            }
+            board.setCell(fromSuji, fromDan, newToPieceID);
+        }
+        if (turn == Turn.WHITE) {
+            board.setCell(toSuji, toDan, toPieceID);
+        } else {
+            board.setCell(toSuji, toDan, -toPieceID);
+        }
+        if(Piece.valueOf(toPieceID).isPromoted()) {
+            toPieceID = Piece.valueOf(toPieceID).getDemotedPieceID();
+        }
+        if(toPieceID != 0) {
+            if (turn == Turn.WHITE) {
+                piecesBlackInHand[toPieceID]--;
+            } else {
+                piecesWhiteInHand[toPieceID]--;
+            }
+        }
+        setTurn(turn == Turn.WHITE ? Turn.BLACK : Turn.WHITE);
+        return true;
+    }
+
     public boolean isValidMove(Move move) {
         ArrayList<Move> moves = getMoves();
         return moves.contains(move);
@@ -88,7 +133,7 @@ public class Position implements Cloneable {
 
     public ArrayList<Move> getMoves() {
         ArrayList<Move> moves = MoveUtils.getMovesPreCheckFilter(this);
-        MoveUtils.filterCheck(this, moves);
+        MoveUtils.filterInvalidMove(this, moves);
         return moves;
     }
 
@@ -110,24 +155,6 @@ public class Position implements Cloneable {
 
     public int[] getBlackPiecesInHand() {
         return piecesBlackInHand;
-    }
-
-    int searchMinMax(int depth, ArrayList<Move> minMoves, EvaluateFunction ef) {
-        if (depth == 0) return ef.eval(this);
-        ArrayList<Move> moves = this.getMoves();
-        int val;
-        int min = 9999;
-        Position nextPosition;
-        for(Move move: moves) {
-            nextPosition = this.clone();
-            nextPosition.moveNextBoard(move);
-            val = - nextPosition.searchMinMax(depth - 1, minMoves, ef);
-            if(val <= min) {
-                min = val;
-                minMoves.set(0, move);
-            }
-        }
-        return min;
     }
 
     Move getLastMove() {

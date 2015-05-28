@@ -13,6 +13,7 @@ public class HumanPlayer extends Player {
   public Move generateNextMove(Position position) {
     Scanner scanner = new Scanner(System.in);
     String output = scanner.next();
-    return Move.stringToMove(output);
+    return MoveUtils.stringToMove(output, position);
   }
+
 }

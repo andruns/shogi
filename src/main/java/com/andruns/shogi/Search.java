@@ -9,8 +9,8 @@ import java.util.ArrayList;
  */
 public class Search {
   private Move bestMove;
+  private ArrayList<Move> tryMoves = new ArrayList<Move>();
   private ArrayList<Move> bestMoves = new ArrayList<Move>();
-  private ArrayList<ArrayList<Move>> bestMovess = new ArrayList<ArrayList<Move>>();
   private final int INFINITY = 99999;
 
   public Search() {
@@ -23,20 +23,20 @@ public class Search {
   public int searchMinMax(Position position, EvaluateFunction ef, int depth, boolean isRoot) {
     if (depth == 0) return ef.eval(position);
     ArrayList<Move> moves = position.getMoves();
-    Position nextPosition;
     int value;
     int max = -INFINITY;
     int min = INFINITY;
     for(Move move: moves) {
-      nextPosition = position.clone();
-      nextPosition.moveNextBoard(move);
-      value = searchMinMax(nextPosition, ef, depth-1, false);
+      position.moveNextBoard(move);
+      value = searchMinMax(position, ef, depth-1, false);
+      position.moveBackBoard(move);
       if(position.getTurn() == Turn.WHITE) {
         if(value > max){
           max = value;
           if(isRoot) {
             bestMove = move;
           }
+          tryMoves.set(depth, bestMove);
         }
       } else {
         if(value < min) {
@@ -55,13 +55,12 @@ public class Search {
       return position.getTurn() == Turn.BLACK && isRoot != true ? -ef.eval(position) : ef.eval(position);
     }
     ArrayList<Move> moves = position.getMoves();
-    Position nextPosition;
     int value;
     int max = -INFINITY;
     for(Move move: moves) {
-      nextPosition = position.clone();
-      nextPosition.moveNextBoard(move);
-      value = -searchNegaMax(nextPosition, ef, depth-1, false);
+      position.moveNextBoard(move);
+      value = -searchNegaMax(position, ef, depth-1, false);
+      position.moveBackBoard(move);
       if(value > max) {
         max = value;
         if(isRoot) {
@@ -75,13 +74,12 @@ public class Search {
   public int searchAlfaBeta(Position position, EvaluateFunction ef, int alfa, int beta, int depth, boolean isRoot) {
     if (depth == 0) return ef.eval(position);
     ArrayList<Move> moves = position.getMoves();
-    Position nextPosition;
     int value;
     if (position.getTurn() == Turn.WHITE) {
       for (Move move : moves) {
-        nextPosition = position.clone();
-        nextPosition.moveNextBoard(move);
-        value = searchAlfaBeta(nextPosition, ef, alfa, beta, depth - 1, false);
+        position.moveNextBoard(move);
+        value = searchAlfaBeta(position, ef, alfa, beta, depth - 1, false);
+        position.moveBackBoard(move);
         if(value > alfa) {
           alfa = value;
           if(isRoot) {
@@ -95,9 +93,9 @@ public class Search {
       return alfa;
     } else {
       for (Move move : moves) {
-        nextPosition = position.clone();
-        nextPosition.moveNextBoard(move);
-        value = searchAlfaBeta(nextPosition, ef, alfa, beta, depth - 1, false);
+        position.moveNextBoard(move);
+        value = searchAlfaBeta(position, ef, alfa, beta, depth - 1, false);
+        position.moveBackBoard(move);
         if(value < beta) {
           beta = value;
           if(isRoot) {
@@ -121,12 +119,11 @@ public class Search {
       return position.getTurn() == Turn.BLACK && isRoot != true ? -ef.eval(position) : ef.eval(position);
     }
     ArrayList<Move> moves = position.getMoves();
-    Position nextPosition;
     int value;
     for (Move move : moves) {
-      nextPosition = position.clone();
-      nextPosition.moveNextBoard(move);
-      value = -searchNegaAlfa(nextPosition, ef, -beta, -alfa, depth - 1, false);
+      position.moveNextBoard(move);
+      value = -searchNegaAlfa(position, ef, -beta, -alfa, depth - 1, false);
+      position.moveBackBoard(move);
       if(value > alfa) {
         alfa = value;
         if(isRoot) {
@@ -142,5 +139,23 @@ public class Search {
 
   public int searchNegaAlfa(Position position, EvaluateFunction ef, int depth, boolean isRoot) {
     return searchNegaAlfa(position, ef, -INFINITY, INFINITY, depth, true);
+  }
+
+  public class Result {
+    private int value;
+    private ArrayList<Move> bestMoves;
+
+    Result(int value, ArrayList<Move> bestMoves) {
+      this.value = value;
+      this.bestMoves = bestMoves;
+    }
+
+    public int getValue() {
+      return value;
+    }
+
+    public ArrayList<Move> getBestMoves() {
+      return bestMoves;
+    }
   }
 }

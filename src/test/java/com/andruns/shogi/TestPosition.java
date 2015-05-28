@@ -8,11 +8,11 @@ import java.util.ArrayList;
 public class TestPosition extends TestCase {
 
   @Test
-  public void testMoveNextBoard() throws Exception {
+    public void testMoveNextBoard() throws Exception {
     Position position = new Position();
-    position.moveNextBoard(new Move(7, 7, 7, 6, 0));
-    position.moveNextBoard(new Move(3, 3, 3, 4, 0));
-    position.moveNextBoard(new Move(8, 8, 2, 2, 1));
+    position.moveNextBoard("7776");
+    position.moveNextBoard("3334");
+    position.moveNextBoard("88221");
 
     Board board = new Board( new short[][]{
         {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
@@ -39,44 +39,44 @@ public class TestPosition extends TestCase {
     ArrayList<Move> moves = position.getMoves();
     assertEquals(30, moves.size());
 
-    assertTrue(moves.contains(new Move(1, 7, 1, 6, 0)));
-    assertTrue(moves.contains(new Move(2, 7, 2, 6, 0)));
-    assertTrue(moves.contains(new Move(3, 7, 3, 6, 0)));
-    assertTrue(moves.contains(new Move(4, 7, 4, 6, 0)));
-    assertTrue(moves.contains(new Move(5, 7, 5, 6, 0)));
-    assertTrue(moves.contains(new Move(6, 7, 6, 6, 0)));
-    assertTrue(moves.contains(new Move(7, 7, 7, 6, 0)));
-    assertTrue(moves.contains(new Move(8, 7, 8, 6, 0)));
-    assertTrue(moves.contains(new Move(9, 7, 9, 6, 0)));
-    assertTrue(moves.contains(new Move(2, 8, 3, 8, 0)));
-    assertTrue(moves.contains(new Move(2, 8, 4, 8, 0)));
-    assertTrue(moves.contains(new Move(2, 8, 5, 8, 0)));
-    assertTrue(moves.contains(new Move(2, 8, 6, 8, 0)));
-    assertTrue(moves.contains(new Move(2, 8, 7, 8, 0)));
-    assertTrue(moves.contains(new Move(2, 8, 1, 8, 0)));
-    assertTrue(moves.contains(new Move(1, 9, 1, 8, 0)));
-    assertTrue(moves.contains(new Move(3, 9, 4, 8, 0)));
-    assertTrue(moves.contains(new Move(3, 9, 3, 8, 0)));
-    assertTrue(moves.contains(new Move(4, 9, 5, 8, 0)));
-    assertTrue(moves.contains(new Move(4, 9, 4, 8, 0)));
-    assertTrue(moves.contains(new Move(4, 9, 3, 8, 0)));
-    assertTrue(moves.contains(new Move(5, 9, 6, 8, 0)));
-    assertTrue(moves.contains(new Move(5, 9, 5, 8, 0)));
-    assertTrue(moves.contains(new Move(5, 9, 4, 8, 0)));
-    assertTrue(moves.contains(new Move(6, 9, 7, 8, 0)));
-    assertTrue(moves.contains(new Move(6, 9, 6, 8, 0)));
-    assertTrue(moves.contains(new Move(6, 9, 5, 8, 0)));
-    assertTrue(moves.contains(new Move(7, 9, 7, 8, 0)));
-    assertTrue(moves.contains(new Move(7, 9, 6, 8, 0)));
-    assertTrue(moves.contains(new Move(9, 9, 9, 8, 0)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("1716", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("2726", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("3736", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("4746", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("5756", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("6766", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("7776", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("8786", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("9796", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("2838", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("2848", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("2858", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("2868", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("2878", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("2818", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("1918", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("3948", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("3938", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("4958", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("4948", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("4938", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("5968", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("5958", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("5948", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("6978", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("6968", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("6958", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("7978", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("7968", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("9998", position)));
   }
 
   @Test
   public void testGetMovesPreCheckFilter() throws Exception {
     Position position = new Position();
-    position.moveNextBoard(new Move(7, 7, 7, 6, 0));
-    position.moveNextBoard(new Move(3, 3, 3, 4, 0));
-    position.moveNextBoard(new Move(8, 8, 3, 3, 1));
+    position.moveNextBoard(MoveUtils.stringToMove("7776", position));
+    position.moveNextBoard(MoveUtils.stringToMove("3334", position));
+    position.moveNextBoard(MoveUtils.stringToMove("88331", position));
 
     ArrayList<Move> moves = position.getMoves();
     assertEquals(7, moves.size());
@@ -88,30 +88,30 @@ public class TestPosition extends TestCase {
   @Test
   public void testIsValidMove() throws Exception {
     Position position = new Position();
-    assertTrue(position.isValidMove(new Move(7, 7, 7, 6, 0)));
-    assertFalse(position.isValidMove(new Move(7, 7, 5, 1, 0)));
+    assertTrue(position.isValidMove(MoveUtils.stringToMove("7776", position)));
+    assertFalse(position.isValidMove(MoveUtils.stringToMove("7751", position)));
   }
 
   @Test
   public void testFilterCheck() throws Exception {
     Position position = new Position();
-    position.moveNextBoard(new Move(7, 7, 7, 6, 0));
-    position.moveNextBoard(new Move(3, 3, 3, 4, 0));
-    position.moveNextBoard(new Move(8, 8, 3, 3, 1));
+    position.moveNextBoard(MoveUtils.stringToMove("7776", position));
+    position.moveNextBoard(MoveUtils.stringToMove("3334", position));
+    position.moveNextBoard(MoveUtils.stringToMove("88331", position));
 
     ArrayList<Move> moves = MoveUtils.getMovesPreCheckFilter(position);
     assertEquals(32, moves.size());
-    MoveUtils.filterCheck(position, moves);
+    MoveUtils.filterInvalidMove(position, moves);
     assertEquals(7, moves.size());
   }
 
   @Test
   public void testMoveTryNextBoard() throws Exception {
     Position position = new Position();
-    position.moveNextBoard(new Move(7, 7, 7, 6, 0));
-    position.moveNextBoard(new Move(3, 3, 3, 4, 0));
-    position.moveNextBoard(new Move(8, 8, 3, 3, 1));
-    position.moveTryNextBoard(new Move(3, 1, 3, 2, 0));
+    position.moveNextBoard(MoveUtils.stringToMove("7776", position));
+    position.moveNextBoard(MoveUtils.stringToMove("3334", position));
+    position.moveNextBoard(MoveUtils.stringToMove("88331", position));
+    position.moveTryNextBoard(MoveUtils.stringToMove("3132", position));
 
     Board board = new Board( new short[][]{
         {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
@@ -151,12 +151,101 @@ public class TestPosition extends TestCase {
     int[] blackPiecesInHand = {0, 0, 0, 0, 0, 0, 0, 0};
     Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
     ArrayList<Move> moves = position.getMoves();
-    assertTrue(moves.contains(new Move(5, 3, 4, 1, 1)));
-    assertTrue(moves.contains(new Move(5, 3, 6, 1, 1)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("53411", position)));
+    assertTrue(moves.contains(MoveUtils.stringToMove("53611", position)));
 
     Position position2 = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
     ArrayList<Move> moves2 = position2.getMoves();
-    assertTrue(moves2.contains(new Move(5, 7, 4, 9, 1)));
-    assertTrue(moves2.contains(new Move(5, 7, 6, 9, 1)));
+    assertTrue(moves2.contains(MoveUtils.stringToMove("57491", position)));
+    assertTrue(moves2.contains(MoveUtils.stringToMove("57691", position)));
+  }
+
+  @Test
+  public void testBackMove() throws Exception {
+    Position position = new Position();
+    position.moveNextBoard(MoveUtils.stringToMove("7776", position));
+    position.moveNextBoard(MoveUtils.stringToMove("3334", position));
+    position.moveNextBoard(MoveUtils.stringToMove("88221", position));
+    Position position0 = position.clone();
+    Move move0 = MoveUtils.stringToMove("3122", position);
+    position.moveNextBoard(move0);
+    Position position1 = position.clone();
+    Move move1 = MoveUtils.stringToMove("0645", position);
+    position.moveNextBoard(move1);
+    Position position2 = position.clone();
+    Move move2 = MoveUtils.stringToMove("2233", position);
+    position.moveNextBoard(move2);
+    Position position3 = position.clone();
+    Move move3 = MoveUtils.stringToMove("45631", position);
+    position.moveNextBoard(move3);
+    Position position4 = position.clone();
+    Move move4 = MoveUtils.stringToMove("0665", position);
+    position.moveNextBoard(move4);
+    Position position5 = position.clone();
+    Move move5 = MoveUtils.stringToMove("6381", position);
+    position.moveNextBoard(move5);
+    Position position6 = position.clone();
+    Move move6 = MoveUtils.stringToMove("65471", position);
+    position.moveNextBoard(move6);
+    Position position7 = position.clone();
+    Move move7 = MoveUtils.stringToMove("8136", position);
+    position.moveNextBoard(move7);
+    Position position8 = position.clone();
+    Move move8 = MoveUtils.stringToMove("4736", position);
+    position.moveNextBoard(move8);
+    Position position9 = position.clone();
+    Move move9 = MoveUtils.stringToMove("3736", position);
+    position.moveNextBoard(move9);
+
+    position.moveBackBoard(move9);
+    assertEquals(position9, position);
+    position.moveBackBoard(move8);
+    assertEquals(position8, position);
+    position.moveBackBoard(move7);
+    assertEquals(position7, position);
+    position.moveBackBoard(move6);
+    assertEquals(position6, position);
+    position.moveBackBoard(move5);
+    assertEquals(position5, position);
+    position.moveBackBoard(move4);
+    assertEquals(position4, position);
+    position.moveBackBoard(move3);
+    assertEquals(position3, position);
+    position.moveBackBoard(move2);
+    assertEquals(position2, position);
+    position.moveBackBoard(move1);
+    assertEquals(position1, position);
+    position.moveBackBoard(move0);
+    assertEquals(position0, position);
+  }
+
+  @Test
+  public void testNifu() throws Exception {
+    Board board = new Board( new short[][]{
+        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,  -1,  0,  0,  0,  1,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    });
+    int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
+    int[] blackPiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
+    Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
+
+    Move move0 = MoveUtils.stringToMove("0156", position);
+    Move move1 = MoveUtils.stringToMove("0146", position);
+    assertFalse(position.moveNextBoard(move0));
+    assertTrue(position.moveNextBoard(move1));
+
+    Move move2 = MoveUtils.stringToMove("0154", position);
+    Move move3 = MoveUtils.stringToMove("0144", position);
+    assertFalse(position.moveNextBoard(move2));
+    assertTrue(position.moveNextBoard(move3));
   }
 }

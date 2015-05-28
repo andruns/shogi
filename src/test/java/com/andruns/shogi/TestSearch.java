@@ -9,24 +9,24 @@ import org.junit.Test;
 public class TestSearch extends TestCase {
   @Test
   public void testMiniMaxSearch() throws Exception {
-    Board board = new Board( new short[][]{
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   -2,  -2,   0,  0,  0,  0,  2,  2,   2, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    Board board = new Board(new short[][]{
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, -2, -2, 0, 0, 0, 0, 2, 2, 2, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
     });
     int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     int[] blackPiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
-    EvaluateFunction ef = new KomadokuEvaluate();
+    EvaluateFunction ef = new EvaluateTestFunction();
     Search search = new Search();
 
     int value = search.searchMinMax(position, ef, 0, true);
@@ -35,21 +35,21 @@ public class TestSearch extends TestCase {
 
     value = search.searchMinMax(position, ef, 1, true);
     System.out.println(value);
-    assertEquals(11, value);
-    assertEquals(new Move(5, 7, 5, 2, 1), search.getBestMove());
+    assertEquals(13, value);
+    assertEquals(new Move(5, 7, 5, 2, 1, 2), search.getBestMove());
 
     value = search.searchMinMax(position, ef, 2, true);
     System.out.println(value);
     assertEquals(2, value);
-    assertEquals(new Move(5, 7, 5, 2, 0), search.getBestMove());
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
 
     long start = System.currentTimeMillis();
     value = search.searchMinMax(position, ef, 3, true);
     long stop = System.currentTimeMillis();
     System.out.println(value);
     System.out.println("elapsed time: " + (stop - start));
-    assertEquals(11, value);
-    assertEquals(new Move(5, 7, 5, 2, 0), search.getBestMove());
+    assertEquals(13, value);
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
 
     position = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
@@ -60,41 +60,41 @@ public class TestSearch extends TestCase {
 
     value = search.searchMinMax(position, ef, 1, true);
     System.out.println(value);
-    assertEquals(-7, value);
-    assertEquals(new Move(5, 2, 5, 7, 1), search.getBestMove());
+    assertEquals(-9, value);
+    assertEquals(new Move(5, 2, 5, 7, 1, 2), search.getBestMove());
 
     value = search.searchMinMax(position, ef, 2, true);
     System.out.println(value);
     assertEquals(2, value);
-    assertEquals(new Move(5, 2, 5, 7, 0), search.getBestMove());
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
 
     value = search.searchMinMax(position, ef, 3, true);
     System.out.println(value);
     System.out.println("elapsed time: " + (stop - start));
-    assertEquals(-7, value);
-    assertEquals(new Move(5, 2, 5, 7, 0), search.getBestMove());
+    assertEquals(-9, value);
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
   }
 
   @Test
   public void testNegaMaxSearch() throws Exception {
-    Board board = new Board( new short[][]{
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   -2,  -2,   0,  0,  0,  0,  2,  2,   2, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    Board board = new Board(new short[][]{
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, -2, -2, 0, 0, 0, 0, 2, 2, 2, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
     });
     int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     int[] blackPiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
-    EvaluateFunction ef = new KomadokuEvaluate();
+    EvaluateFunction ef = new EvaluateTestFunction();
     Search search = new Search();
 
     int value = search.searchNegaMax(position, ef, 0, true);
@@ -103,21 +103,21 @@ public class TestSearch extends TestCase {
 
     value = search.searchNegaMax(position, ef, 1, true);
     System.out.println(value);
-    assertEquals(11, value);
-    assertEquals(new Move(5, 7, 5, 2, 1), search.getBestMove());
+    assertEquals(13, value);
+    assertEquals(new Move(5, 7, 5, 2, 1, 2), search.getBestMove());
 
     value = search.searchNegaMax(position, ef, 2, true);
     System.out.println(value);
     assertEquals(2, value);
-    assertEquals(new Move(5, 7, 5, 2, 0), search.getBestMove());
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
 
     long start = System.currentTimeMillis();
     value = search.searchNegaMax(position, ef, 3, true);
     long stop = System.currentTimeMillis();
     System.out.println(value);
     System.out.println("elapsed time: " + (stop - start));
-    assertEquals(11, value);
-    assertEquals(new Move(5, 7, 5, 2, 0), search.getBestMove());
+    assertEquals(13, value);
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
 
     position = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
@@ -128,41 +128,41 @@ public class TestSearch extends TestCase {
 
     value = search.searchNegaMax(position, ef, 1, true);
     System.out.println(value);
-    assertEquals(-7, value);
-    assertEquals(new Move(5, 2, 5, 7, 1), search.getBestMove());
+    assertEquals(-9, value);
+    assertEquals(new Move(5, 2, 5, 7, 1, 2), search.getBestMove());
 
     value = search.searchNegaMax(position, ef, 2, true);
     System.out.println(value);
     assertEquals(2, value);
-    assertEquals(new Move(5, 2, 5, 7, 0), search.getBestMove());
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
 
     value = search.searchNegaMax(position, ef, 3, true);
     System.out.println(value);
     System.out.println("elapsed time: " + (stop - start));
-    assertEquals(-7, value);
-    assertEquals(new Move(5, 2, 5, 7, 0), search.getBestMove());
+    assertEquals(-9, value);
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
   }
 
   @Test
   public void testAlfaBetaSearch() throws Exception {
-    Board board = new Board( new short[][]{
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   -2,  -2,   0,  0,  0,  0,  2,  2,   2, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    Board board = new Board(new short[][]{
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, -2, -2, 0, 0, 0, 0, 2, 2, 2, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
     });
     int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     int[] blackPiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
-    EvaluateFunction ef = new KomadokuEvaluate();
+    EvaluateFunction ef = new EvaluateTestFunction();
     Search search = new Search();
 
     int value = search.searchAlfaBeta(position, ef, 0, true);
@@ -171,21 +171,21 @@ public class TestSearch extends TestCase {
 
     value = search.searchAlfaBeta(position, ef, 1, true);
     System.out.println(value);
-    assertEquals(11, value);
-    assertEquals(new Move(5, 7, 5, 2, 1), search.getBestMove());
+    assertEquals(13, value);
+    assertEquals(new Move(5, 7, 5, 2, 1, 2), search.getBestMove());
 
     value = search.searchAlfaBeta(position, ef, 2, true);
     System.out.println(value);
     assertEquals(2, value);
-    assertEquals(new Move(5, 7, 5, 2, 0), search.getBestMove());
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
 
     long start = System.currentTimeMillis();
     value = search.searchAlfaBeta(position, ef, 3, true);
     long stop = System.currentTimeMillis();
     System.out.println(value);
     System.out.println("elapsed time: " + (stop - start));
-    assertEquals(11, value);
-    assertEquals(new Move(5, 7, 5, 2, 0), search.getBestMove());
+    assertEquals(13, value);
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
 
     position = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
@@ -196,41 +196,41 @@ public class TestSearch extends TestCase {
 
     value = search.searchAlfaBeta(position, ef, 1, true);
     System.out.println(value);
-    assertEquals(-7, value);
-    assertEquals(new Move(5, 2, 5, 7, 1), search.getBestMove());
+    assertEquals(-9, value);
+    assertEquals(new Move(5, 2, 5, 7, 1, 2), search.getBestMove());
 
     value = search.searchAlfaBeta(position, ef, 2, true);
     System.out.println(value);
     assertEquals(2, value);
-    assertEquals(new Move(5, 2, 5, 7, 0), search.getBestMove());
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
 
     value = search.searchAlfaBeta(position, ef, 3, true);
     System.out.println(value);
     System.out.println("elapsed time: " + (stop - start));
-    assertEquals(-7, value);
-    assertEquals(new Move(5, 2, 5, 7, 0), search.getBestMove());
+    assertEquals(-9, value);
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
   }
 
   @Test
   public void testNegaAlfaSearch() throws Exception {
-    Board board = new Board( new short[][]{
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   -2,  -2,   0,  0,  0,  0,  2,  2,   2, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    Board board = new Board(new short[][]{
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, -2, -2, 0, 0, 0, 0, 2, 2, 2, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
     });
     int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     int[] blackPiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
-    EvaluateFunction ef = new KomadokuEvaluate();
+    EvaluateFunction ef = new EvaluateTestFunction();
     Search search = new Search();
 
     int value = search.searchNegaAlfa(position, ef, 0, true);
@@ -239,21 +239,21 @@ public class TestSearch extends TestCase {
 
     value = search.searchNegaAlfa(position, ef, 1, true);
     System.out.println(value);
-    assertEquals(11, value);
-    assertEquals(new Move(5, 7, 5, 2, 1), search.getBestMove());
+    assertEquals(13, value);
+    assertEquals(new Move(5, 7, 5, 2, 1, 2), search.getBestMove());
 
     value = search.searchNegaAlfa(position, ef, 2, true);
     System.out.println(value);
     assertEquals(2, value);
-    assertEquals(new Move(5, 7, 5, 2, 0), search.getBestMove());
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
 
     long start = System.currentTimeMillis();
     value = search.searchNegaAlfa(position, ef, 3, true);
     long stop = System.currentTimeMillis();
     System.out.println(value);
     System.out.println("elapsed time: " + (stop - start));
-    assertEquals(11, value);
-    assertEquals(new Move(5, 7, 5, 2, 0), search.getBestMove());
+    assertEquals(13, value);
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
 
     position = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
@@ -264,46 +264,45 @@ public class TestSearch extends TestCase {
 
     value = search.searchNegaAlfa(position, ef, 1, true);
     System.out.println(value);
-    assertEquals(-7, value);
-    assertEquals(new Move(5, 2, 5, 7, 1), search.getBestMove());
+    assertEquals(-9, value);
+    assertEquals(new Move(5, 2, 5, 7, 1, 2), search.getBestMove());
 
     value = search.searchNegaAlfa(position, ef, 2, true);
     System.out.println(value);
     assertEquals(2, value);
-    assertEquals(new Move(5, 2, 5, 7, 0), search.getBestMove());
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
 
     value = search.searchNegaAlfa(position, ef, 3, true);
     System.out.println(value);
     System.out.println("elapsed time: " + (stop - start));
-    assertEquals(-7, value);
-    assertEquals(new Move(5, 2, 5, 7, 0), search.getBestMove());
+    assertEquals(-9, value);
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
   }
 
   @Test
   public void testCompareSearch() throws Exception {
-    Board board = new Board( new short[][]{
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   1,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  4,  0,  4,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,   -2,  -2,   0, -4,  0,  0,  2,  2,   2, 99},
-        {99,    0,   0,   7,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,  -3,   0,  0,  5, -5,  0,  0,   0, 99},
-        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-        {99,    0,   0,   6,  0,  0,  0,  0,  0,   0, 99},
-        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    Board board = new Board(new short[][]{
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 1, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 4, 0, 4, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, -2, -2, 0, -4, 0, 0, 2, 2, 2, 99},
+        {99, 0, 0, 7, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, -3, 0, 0, 5, -5, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 6, 0, 0, 0, 0, 0, 0, 99},
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
     });
     int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     int[] blackPiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
     Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
-    EvaluateFunction ef = new KomadokuEvaluate();
+    EvaluateFunction ef = new EvaluateTestFunction();
     Search minMax = new Search();
     Search negaMax = new Search();
     Search alfaBeta = new Search();
     Search negaAlfa = new Search();
-    int value;
     long start, stop;
 
     start = System.currentTimeMillis();
@@ -364,5 +363,55 @@ public class TestSearch extends TestCase {
     assertTrue(minMax.getBestMove().equals(negaMax.getBestMove()));
     assertTrue(negaMax.getBestMove().equals(alfaBeta.getBestMove()));
     assertTrue(alfaBeta.getBestMove().equals(negaAlfa.getBestMove()));
+  }
+
+  @Test
+  public void testEasyMate() throws Exception {
+    Board board = new Board(new short[][]{
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99,-14,0, 4, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
+    });
+    int[] whitePiecesInHand = {0, 0, 0, 0, 0, 1, 0, 0};
+    int[] blackPiecesInHand = {0, 0, 0, 0, 0, 0, 0, 0};
+    Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
+    System.out.println(position.toString());
+    EvaluateFunction ef = new EvaluateTestFunction();
+    Search search = new Search();
+    search.searchNegaAlfa(position, ef, 2, true);
+    assertEquals(MoveUtils.stringToMove("0552", position), search.getBestMove());
+  }
+
+  @Test
+  public void testUchiFuMate() throws Exception {
+    Board board = new Board(new short[][]{
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99,-2, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99,-14,0, 4, 0, 0, 0, 0, 0, 0, 99},
+        {99,-2, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99},
+        {99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99}
+    });
+    int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
+    int[] blackPiecesInHand = {0, 0, 0, 0, 0, 0, 0, 0};
+    Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
+    System.out.println(position.toString());
+    EvaluateFunction ef = new EvaluateTestFunction();
+    Search search = new Search();
+    search.searchNegaAlfa(position, ef, 2, true);
+    assertFalse(MoveUtils.stringToMove("0152", position) == search.getBestMove());
   }
 }
