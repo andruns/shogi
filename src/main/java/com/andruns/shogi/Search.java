@@ -3,14 +3,13 @@ package com.andruns.shogi;
 import com.andruns.shogi.Constant.Turn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by asanu0829 on 5/23/15.
  */
 public class Search {
   private Move bestMove;
-  private ArrayList<Move> tryMoves = new ArrayList<Move>();
-  private ArrayList<Move> bestMoves = new ArrayList<Move>();
   private final int INFINITY = 99999;
 
   public Search() {
@@ -20,34 +19,33 @@ public class Search {
     return bestMove;
   }
 
-  public int searchMinMax(Position position, EvaluateFunction ef, int depth, boolean isRoot) {
-    if (depth == 0) return ef.eval(position);
+  public Result searchMinMax(Position position, EvaluateFunction ef, int depth, int maxDepth) {
+    if (depth == 0)
+      return new Result(ef.eval(position), new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
     ArrayList<Move> moves = position.getMoves();
-    int value;
+    Result res;
+    Result bestRes = null;
     int max = -INFINITY;
     int min = INFINITY;
     for(Move move: moves) {
       position.moveNextBoard(move);
-      value = searchMinMax(position, ef, depth-1, false);
+      res = searchMinMax(position, ef, depth - 1, maxDepth);
       position.moveBackBoard(move);
       if(position.getTurn() == Turn.WHITE) {
-        if(value > max){
-          max = value;
-          if(isRoot) {
-            bestMove = move;
-          }
-          tryMoves.set(depth, bestMove);
+        if(res.getValue() > max){
+          max = res.getValue();
+          res.setBestMoves(maxDepth - depth, move);
+          bestRes = res;
         }
       } else {
-        if(value < min) {
-          min = value;
-          if(isRoot) {
-            bestMove = move;
-          }
+        if(res.getValue() < min) {
+          min = res.getValue();
+          res.setBestMoves(maxDepth - depth, move);
+          bestRes = res;
         }
       }
     }
-    return position.getTurn() == Turn.WHITE ? max : min;
+    return bestRes;
   }
 
   public int searchNegaMax(Position position, EvaluateFunction ef, int depth, boolean isRoot) {
@@ -150,8 +148,16 @@ public class Search {
       this.bestMoves = bestMoves;
     }
 
+    public void setValue(int value) {
+      this.value = value;
+    }
+
     public int getValue() {
       return value;
+    }
+
+    public void setBestMoves(int index, Move move) {
+      this.bestMoves.set(index, move);
     }
 
     public ArrayList<Move> getBestMoves() {

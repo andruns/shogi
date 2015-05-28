@@ -417,10 +417,10 @@ public class MoveUtils {
         }
 
         // filter uchifu
-//        if(cPosition.getMoves().size() == 0) {
-//          iMoves.remove();
-//          continue loop1;
-//        }
+        if(move.getFromSuji() == 0 && move.getFromDan() == 1 && cPosition.getMoves().size() == 0) {
+          iMoves.remove();
+          continue loop1;
+        }
       }
     }
   }

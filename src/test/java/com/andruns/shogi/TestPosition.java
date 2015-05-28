@@ -248,4 +248,34 @@ public class TestPosition extends TestCase {
     assertFalse(position.moveNextBoard(move2));
     assertTrue(position.moveNextBoard(move3));
   }
+
+  @Test
+  public void testUchifu() throws Exception {
+    Board board = new Board( new short[][]{
+        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,   -2,   0,   4,  0,  0,  0,  0,  0,   0, 99},
+        {99,  -14,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,   -3,   0,   4,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
+        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    });
+    int[] whitePiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
+    int[] blackPiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
+    Position position = new Position(Constant.Turn.WHITE, board, whitePiecesInHand, blackPiecesInHand);
+
+    Move move1 = MoveUtils.stringToMove("0152", position);
+    assertFalse(position.moveNextBoard(move1));
+
+    Move move2 = MoveUtils.stringToMove("0153", position);
+    Move move3 = MoveUtils.stringToMove("0111", position);
+    Move move4 = MoveUtils.stringToMove("53520", position);
+    position.moveNextBoard(move2);
+    position.moveNextBoard(move3);
+    assertTrue(position.moveNextBoard(move4));
+  }
 }

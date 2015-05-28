@@ -19,11 +19,6 @@ public class Position implements Cloneable {
         this(Turn.WHITE, new Board(), new int[8], new int[8]);
     }
 
-//    TODO: start from suspended position
-//    Position(Board b) {
-//        this(Turn.WHITE, b, new int[8], new int[8]);
-//    }
-
     Position(Turn t, Board b, int[] pW, int[] pB) {
         this.turn = t;
         this.board = b;
@@ -204,7 +199,6 @@ public class Position implements Cloneable {
             out.append(Piece.valueOf(i)).append(":" + piecesWhiteInHand[i] + " ");
         }
         out.append("\n");
-        out.append(getMoves().toString());
         return out.toString();
     }
 }

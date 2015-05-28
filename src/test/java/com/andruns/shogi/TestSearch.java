@@ -1,7 +1,11 @@
 package com.andruns.shogi;
 
+import com.andruns.shogi.Search.Result;
+
 import junit.framework.TestCase;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 /**
  * Created by asanu0829 on 5/23/15.
@@ -29,50 +33,38 @@ public class TestSearch extends TestCase {
     EvaluateFunction ef = new EvaluateTestFunction();
     Search search = new Search();
 
-    int value = search.searchMinMax(position, ef, 0, true);
-    System.out.println(value);
-    assertEquals(2, value);
+    Result res = search.searchMinMax(position, ef, 0, 0);
+    assertEquals(2, res.getValue());
 
-    value = search.searchMinMax(position, ef, 1, true);
-    System.out.println(value);
-    assertEquals(13, value);
-    assertEquals(new Move(5, 7, 5, 2, 1, 2), search.getBestMove());
+    res = search.searchMinMax(position, ef, 1, 1);
+    assertEquals(13, res.getValue());
+    assertEquals(new Move(5, 7, 5, 2, 1, 2), res.getBestMoves().get(0));
 
-    value = search.searchMinMax(position, ef, 2, true);
-    System.out.println(value);
-    assertEquals(2, value);
-    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
+    res = search.searchMinMax(position, ef, 2, 2);
+    assertEquals(2, res.getValue());
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), res.getBestMoves().get(0));
 
-    long start = System.currentTimeMillis();
-    value = search.searchMinMax(position, ef, 3, true);
-    long stop = System.currentTimeMillis();
-    System.out.println(value);
-    System.out.println("elapsed time: " + (stop - start));
-    assertEquals(13, value);
-    assertEquals(new Move(5, 7, 5, 2, 0, 2), search.getBestMove());
+    res = search.searchMinMax(position, ef, 3, 3);
+    assertEquals(13, res.getValue());
+    assertEquals(new Move(5, 7, 5, 2, 0, 2), res.getBestMoves().get(0));
 
     position = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
     System.out.println(position.toString());
 
-    value = search.searchMinMax(position, ef, 0, true);
-    System.out.println(value);
-    assertEquals(2, value);
+    res = search.searchMinMax(position, ef, 0, 0);
+    assertEquals(2, res.getValue());
 
-    value = search.searchMinMax(position, ef, 1, true);
-    System.out.println(value);
-    assertEquals(-9, value);
-    assertEquals(new Move(5, 2, 5, 7, 1, 2), search.getBestMove());
+    res = search.searchMinMax(position, ef, 1, 1);
+    assertEquals(-9, res.getValue());
+    assertEquals(new Move(5, 2, 5, 7, 1, 2), res.getBestMoves().get(0));
 
-    value = search.searchMinMax(position, ef, 2, true);
-    System.out.println(value);
-    assertEquals(2, value);
-    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
+    res = search.searchMinMax(position, ef, 2, 2);
+    assertEquals(2, res.getValue());
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), res.getBestMoves().get(0));
 
-    value = search.searchMinMax(position, ef, 3, true);
-    System.out.println(value);
-    System.out.println("elapsed time: " + (stop - start));
-    assertEquals(-9, value);
-    assertEquals(new Move(5, 2, 5, 7, 0, 2), search.getBestMove());
+    res = search.searchMinMax(position, ef, 3, 3);
+    assertEquals(-9, res.getValue());
+    assertEquals(new Move(5, 2, 5, 7, 0, 2), res.getBestMoves().get(0));
   }
 
   @Test
@@ -306,10 +298,10 @@ public class TestSearch extends TestCase {
     long start, stop;
 
     start = System.currentTimeMillis();
-    minMax.searchMinMax(position, ef, 2, true);
+    Result res = minMax.searchMinMax(position, ef, 2, 2);
     stop = System.currentTimeMillis();
     System.out.println("minmax elapsed time: " + (stop - start));
-    System.out.println(minMax.getBestMove().toString());
+    System.out.println(res.getBestMoves().get(0).toString());
 
     start = System.currentTimeMillis();
     negaMax.searchNegaMax(position, ef, 2, true);
@@ -329,7 +321,7 @@ public class TestSearch extends TestCase {
     System.out.println("negaalfa elapsed time: " + (stop - start));
     System.out.println(negaAlfa.getBestMove().toString());
 
-    assertTrue(minMax.getBestMove().equals(negaMax.getBestMove()));
+    assertTrue(res.getBestMoves().get(0).equals(negaMax.getBestMove()));
     assertTrue(negaMax.getBestMove().equals(alfaBeta.getBestMove()));
     assertTrue(alfaBeta.getBestMove().equals(negaAlfa.getBestMove()));
 
@@ -337,10 +329,10 @@ public class TestSearch extends TestCase {
     System.out.println(position.toString());
 
     start = System.currentTimeMillis();
-    minMax.searchMinMax(position, ef, 2, true);
+    res = minMax.searchMinMax(position, ef, 2, 2);
     stop = System.currentTimeMillis();
     System.out.println("minmax elapsed time: " + (stop - start));
-    System.out.println(minMax.getBestMove().toString());
+    System.out.println(res.getBestMoves().get(0).toString());
 
     start = System.currentTimeMillis();
     negaMax.searchNegaMax(position, ef, 2, true);
@@ -360,7 +352,10 @@ public class TestSearch extends TestCase {
     System.out.println("negaalfa elapsed time: " + (stop - start));
     System.out.println(negaAlfa.getBestMove().toString());
 
-    assertTrue(minMax.getBestMove().equals(negaMax.getBestMove()));
+    ArrayList<String> list = new ArrayList<String>();	//String限定のリスト
+    list.add("abc");
+
+    assertTrue(res.getBestMoves().get(0).equals(negaMax.getBestMove()));
     assertTrue(negaMax.getBestMove().equals(alfaBeta.getBestMove()));
     assertTrue(alfaBeta.getBestMove().equals(negaAlfa.getBestMove()));
   }
