@@ -94,6 +94,7 @@ public class Search {
           return bestRes;
         }
       }
+      return bestRes;
     } else {
       for (Move move : moves) {
         position.moveNextBoard(move);
@@ -109,8 +110,8 @@ public class Search {
           return bestRes;
         }
       }
+      return bestRes;
     }
-    return bestRes;
   }
 
   public Result searchAlfaBeta(Position position, EvaluateFunction ef, int depth, int maxDepth) {
