@@ -48,68 +48,73 @@ public class Search {
     return bestRes;
   }
 
-  public int searchNegaMax(Position position, EvaluateFunction ef, int depth, boolean isRoot) {
+  public Result searchNegaMax(Position position, EvaluateFunction ef, int depth, int maxDepth) {
     if (depth == 0){
-      return position.getTurn() == Turn.BLACK && isRoot != true ? -ef.eval(position) : ef.eval(position);
+      return position.getTurn() == Turn.BLACK && depth != maxDepth
+          ? new Result(-ef.eval(position), new ArrayList<Move>(Arrays.asList(new Move[maxDepth])))
+          : new Result(ef.eval(position), new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
     }
     ArrayList<Move> moves = position.getMoves();
-    int value;
+    Result res;
+    Result bestRes = null;
     int max = -INFINITY;
     for(Move move: moves) {
       position.moveNextBoard(move);
-      value = -searchNegaMax(position, ef, depth-1, false);
+      res = searchNegaMax(position, ef, depth-1, maxDepth);
+      res.setValue(-res.getValue());
       position.moveBackBoard(move);
-      if(value > max) {
-        max = value;
-        if(isRoot) {
-          bestMove = move;
-        }
+      if(res.getValue() > max) {
+        max = res.getValue();
+        res.setBestMoves(maxDepth - depth, move);
+        bestRes = res;
       }
     }
-    return isRoot == true && position.getTurn() == Turn.BLACK ? -max : max;
+    if(depth == maxDepth && position.getTurn() == Turn.BLACK) bestRes.setValue(-bestRes.getValue());
+    return bestRes;
   }
 
-  public int searchAlfaBeta(Position position, EvaluateFunction ef, int alfa, int beta, int depth, boolean isRoot) {
-    if (depth == 0) return ef.eval(position);
+  public Result searchAlfaBeta(Position position, EvaluateFunction ef, int alfa, int beta, int depth, int maxDepth) {
+    if (depth == 0)
+      return new Result(ef.eval(position), new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
     ArrayList<Move> moves = position.getMoves();
-    int value;
+    Result res;
+    Result bestRes = null;
     if (position.getTurn() == Turn.WHITE) {
       for (Move move : moves) {
         position.moveNextBoard(move);
-        value = searchAlfaBeta(position, ef, alfa, beta, depth - 1, false);
+        res = searchAlfaBeta(position, ef, alfa, beta, depth - 1, maxDepth);
         position.moveBackBoard(move);
-        if(value > alfa) {
-          alfa = value;
-          if(isRoot) {
-            bestMove = move;
-          }
+        if(res.getValue() > alfa) {
+          alfa = res.getValue();
+          res.setBestMoves(maxDepth - depth, move);
+          bestRes = res;
         }
         if (alfa > beta) {
-          return beta;
+          bestRes.setValue(beta);
+          return bestRes;
         }
       }
-      return alfa;
     } else {
       for (Move move : moves) {
         position.moveNextBoard(move);
-        value = searchAlfaBeta(position, ef, alfa, beta, depth - 1, false);
+        res = searchAlfaBeta(position, ef, alfa, beta, depth - 1, maxDepth);
         position.moveBackBoard(move);
-        if(value < beta) {
-          beta = value;
-          if(isRoot) {
-            bestMove = move;
-          }
+        if(res.getValue() < beta) {
+          beta = res.getValue();
+          res.setBestMoves(maxDepth - depth, move);
+          bestRes = res;
         }
         if (alfa > beta) {
-          return alfa;
+          bestRes.setValue(alfa);
+          return bestRes;
         }
       }
-      return beta;
     }
+    return bestRes;
   }
 
-  public int searchAlfaBeta(Position position, EvaluateFunction ef, int depth, boolean isRoot) {
-    return searchAlfaBeta(position, ef, -INFINITY, INFINITY, depth, true);
+  public Result searchAlfaBeta(Position position, EvaluateFunction ef, int depth, int maxDepth) {
+    return searchAlfaBeta(position, ef, -INFINITY, INFINITY, depth, maxDepth);
   }
 
   public int searchNegaAlfa(Position position, EvaluateFunction ef, int alfa, int beta, int depth, boolean isRoot) {
