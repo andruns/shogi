@@ -348,4 +348,33 @@ public class TestSearch extends TestCase {
     Result res = search.searchNegaAlfa(position, ef, 2, 2);
     assertEquals(MoveUtils.stringToMove("0552", position), res.getBestMoves().get(0));
   }
+
+  @Test
+  public void testLastPosition() throws Exception {
+    Board board = new Board(new short[][]{
+        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
+        {99,    0,  -2,  -1,  0,  0,  0,  1,  0,   2, 99},
+        {99,    0,  -6,   0,  0,  0,  0,  0,  0,   3, 99},
+        {99,    0,  13,  -1,  0,  0,  0,  1,  0,   4, 99},
+        {99,    0,   0,  -1,  0,  0,  0,  1,  0,   5, 99},
+        {99,    0, -14,  -1,  0,  0,  0,  1,  0,  14, 99},
+        {99,   -5,   0,  -1,  0,  0,  0,  1,  0,   5, 99},
+        {99,   -4,   0,  -1,  0,  0,  1,  0,  0,   4, 99},
+        {99,   -3,  -7,  -1,  0,  0,  0,  1,  6,   3, 99},
+        {99,   -2,   0,  -1,  0,  0,  0,  1,  0,   2, 99},
+        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
+    });
+    int[] whitePiecesInHand = {0, 1, 0, 1, 1, 1, 0, 0};
+    int[] blackPiecesInHand = {0, 1, 0, 0, 0, 0, 0, 0};
+    Position position = new Position(Constant.Turn.BLACK, board, whitePiecesInHand, blackPiecesInHand);
+    System.out.println(position.toString());
+    EvaluateFunction ef = new EvaluateTestFunction();
+    Search search = new Search();
+    Result res = search.searchNegaMax(position, ef, 3, 3);
+    System.out.println("this value is: " + res.getValue());
+    System.out.println("Best moves:");
+    for(Move move: res.getBestMoves()) {
+      System.out.println(move.toString());
+    }
+  }
 }

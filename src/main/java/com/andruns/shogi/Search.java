@@ -9,14 +9,9 @@ import java.util.Arrays;
  * Created by asanu0829 on 5/23/15.
  */
 public class Search {
-  private Move bestMove;
   private final int INFINITY = 99999;
 
   public Search() {
-  }
-
-  Move getBestMove() {
-    return bestMove;
   }
 
   public Result searchMinMax(Position position, EvaluateFunction ef, int depth, int maxDepth) {
@@ -27,6 +22,11 @@ public class Search {
     Result bestRes = null;
     int max = -INFINITY;
     int min = INFINITY;
+    if(moves.size() == 0) {
+      int mate_value = position.getTurn() == Turn.WHITE ? INFINITY : -INFINITY;
+      bestRes = new Result(mate_value, new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
+      return bestRes;
+    }
     for(Move move: moves) {
       position.moveNextBoard(move);
       res = searchMinMax(position, ef, depth - 1, maxDepth);
@@ -58,6 +58,11 @@ public class Search {
     Result res;
     Result bestRes = null;
     int max = -INFINITY;
+    if(moves.size() == 0) {
+      int mate_value = position.getTurn() == Turn.WHITE ? INFINITY : -INFINITY;
+      bestRes = new Result(mate_value, new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
+      return bestRes;
+    }
     for(Move move: moves) {
       position.moveNextBoard(move);
       res = searchNegaMax(position, ef, depth-1, maxDepth);
@@ -79,6 +84,11 @@ public class Search {
     ArrayList<Move> moves = position.getMoves();
     Result res;
     Result bestRes = null;
+    if(moves.size() == 0) {
+      int mate_value = position.getTurn() == Turn.WHITE ? INFINITY : -INFINITY;
+      bestRes = new Result(mate_value, new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
+      return bestRes;
+    }
     if (position.getTurn() == Turn.WHITE) {
       for (Move move : moves) {
         position.moveNextBoard(move);
@@ -130,6 +140,11 @@ public class Search {
     ArrayList<Move> moves = position.getMoves();
     Result res;
     Result bestRes = null;
+    if(moves.size() == 0) {
+      int mate_value = position.getTurn() == Turn.WHITE ? INFINITY : -INFINITY;
+      bestRes = new Result(mate_value, new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
+      return bestRes;
+    }
     for (Move move : moves) {
       position.moveNextBoard(move);
       res = searchNegaAlfa(position, ef, -beta, -alfa, depth - 1, maxDepth);
