@@ -11,7 +11,7 @@ public class CPUPlayer extends Player {
   public Move generateNextMove(Position position) {
     EvaluateFunction ef = new EvaluateTestFunction();
     Search search = new Search();
-    Search.Result res = search.searchNegaAlfa(position, ef, 3, 3);
+    Search.Result res = search.searchAlphaBeta(position, ef, 3);
     System.out.println("this value is: " + res.getValue());
     System.out.println("Best moves:");
     for(Move move: res.getBestMoves()) {
