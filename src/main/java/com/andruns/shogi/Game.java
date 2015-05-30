@@ -44,6 +44,7 @@ class Game {
         return false;
       }
       move = player.generateNextMove(position);
+      System.out.println(move.toString());
       if (move.equals(new Move(0, 0, 0, 0))) {
         return false;
       }

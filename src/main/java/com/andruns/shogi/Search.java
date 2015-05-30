@@ -9,7 +9,8 @@ import java.util.Arrays;
  * Created by asanu0829 on 5/23/15.
  */
 public class Search {
-  private final int INFINITY = 99999;
+  private final int INFINITY = 999999;
+  private final int MATE = 99999;
 
   public Search() {
   }
@@ -18,26 +19,38 @@ public class Search {
     if (depth == 0)
       return new Result(ef.eval(position), new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
     ArrayList<Move> moves = position.getMoves();
+    Position nextPosition;
     Result res;
     Result bestRes = null;
     int max = -INFINITY;
     int min = INFINITY;
     if (moves.size() == 0) {
-      int mate_value = position.getTurn() == Turn.WHITE ? -INFINITY : INFINITY;
+      int mate_value = position.getTurn() == Turn.WHITE ? -MATE : MATE;
       bestRes = new Result(mate_value, new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
       return bestRes;
     }
-    for (Move move : moves) {
-      position.moveNextBoard(move);
-      res = searchMinMax(position, ef, depth - 1, maxDepth);
-      position.moveBackBoard(move);
-      if (position.getTurn() == Turn.WHITE) {
+    if (position.getTurn() == Turn.WHITE) {
+      for (Move move : moves) {
+//        position.moveNextBoard(move);
+//        res = searchMinMax(position, ef, depth - 1, maxDepth);
+//        position.moveBackBoard(move);
+        nextPosition = position.clone();
+        nextPosition.moveNextBoard(move);
+        res = searchMinMax(nextPosition, ef, depth - 1, maxDepth);
         if (res.getValue() > max) {
           max = res.getValue();
           res.setBestMoves(maxDepth - depth, move);
           bestRes = res;
         }
-      } else {
+      }
+    } else {
+      for (Move move : moves) {
+//        position.moveNextBoard(move);
+//        res = searchMinMax(position, ef, depth - 1, maxDepth);
+//        position.moveBackBoard(move);
+        nextPosition = position.clone();
+        nextPosition.moveNextBoard(move);
+        res = searchMinMax(nextPosition, ef, depth - 1, maxDepth);
         if (res.getValue() < min) {
           min = res.getValue();
           res.setBestMoves(maxDepth - depth, move);
@@ -56,18 +69,22 @@ public class Search {
     if (depth == 0)
       return new Result(ef.eval(position), new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
     ArrayList<Move> moves = position.getMoves();
+    Position nextPosition;
     Result res;
     Result bestRes = null;
     if(moves.size() == 0) {
-      int mate_value = position.getTurn() == Turn.WHITE ? -INFINITY : INFINITY;
+      int mate_value = position.getTurn() == Turn.WHITE ? -MATE : MATE;
       bestRes = new Result(mate_value, new ArrayList<Move>(Arrays.asList(new Move[maxDepth])));
       return bestRes;
     }
     if (position.getTurn() == Turn.WHITE) {
       for (Move move : moves) {
-        position.moveNextBoard(move);
-        res = searchAlphaBeta(position, ef, alpha, beta, depth - 1, maxDepth);
-        position.moveBackBoard(move);
+//        position.moveNextBoard(move);
+//        res = searchAlphaBeta(position, ef, alpha, beta, depth - 1, maxDepth);
+//        position.moveBackBoard(move);
+        nextPosition = position.clone();
+        nextPosition.moveNextBoard(move);
+        res = searchAlphaBeta(nextPosition, ef, alpha, beta, depth - 1, maxDepth);
         if(res.getValue() > alpha) {
           alpha = res.getValue();
           res.setBestMoves(maxDepth - depth, move);
@@ -82,9 +99,12 @@ public class Search {
       }
     } else {
       for (Move move : moves) {
-        position.moveNextBoard(move);
-        res = searchAlphaBeta(position, ef, alpha, beta, depth - 1, maxDepth);
-        position.moveBackBoard(move);
+//        position.moveNextBoard(move);
+//        res = searchAlphaBeta(position, ef, alpha, beta, depth - 1, maxDepth);
+//        position.moveBackBoard(move);
+        nextPosition = position.clone();
+        nextPosition.moveNextBoard(move);
+        res = searchAlphaBeta(nextPosition, ef, alpha, beta, depth - 1, maxDepth);
         if(res.getValue() < beta) {
           beta = res.getValue();
           res.setBestMoves(maxDepth - depth, move);

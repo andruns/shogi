@@ -6,23 +6,7 @@ package com.andruns.shogi;
 public class Main {
   public static void main(String[] args) {
     Player player1 = new HumanPlayer("Player1");
-    Player player2 = new CPUPlayer("CPU(Rundom)");
-
-//    Board board = new Board(new short[][]{
-//        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
-//        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-//        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-//        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-//        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-//        {99,    0,   0,   4,  0,  0,  0,  0,  0,   0, 99},
-//        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-//        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-//        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-//        {99,    0,   0,   0,  0,  0,  0,  0,  0,   0, 99},
-//        {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99}
-//    });
-//    Position position = new Position(board);
-
+    Player player2 = new CPUPlayer("CPU(Test)", new EvaluateTestFunction(), 2);
     Position position = new Position();
 
     Game game = new Game(player1, player2, position);

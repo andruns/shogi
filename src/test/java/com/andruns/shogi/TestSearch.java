@@ -205,7 +205,7 @@ public class TestSearch extends TestCase {
     assertEquals(MoveUtils.stringToMove("0552", position), res.getBestMoves().get(0));
   }
 
-//  @Test
+  @Test
   public void testLastPosition() throws Exception {
     Board board = new Board(new short[][]{
         {99,   99,  99,  99, 99, 99, 99, 99, 99,  99, 99},
@@ -226,11 +226,11 @@ public class TestSearch extends TestCase {
     System.out.println(position.toString());
     EvaluateFunction ef = new EvaluateTestFunction();
     Search search = new Search();
-//    Result res = search.searchAlphaBeta(position, ef, 3);
-    Result res = search.searchMinMax(position, ef, 3);
+    Result res = search.searchAlphaBeta(position, ef, 3);
     System.out.println("this value is: " + res.getValue());
     System.out.println("Best moves:");
     for(Move move: res.getBestMoves()) {
+      if (move == null) break;
       System.out.println(move.toString());
     }
   }
